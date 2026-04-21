@@ -1,0 +1,204 @@
+
+import React, { useEffect, useState } from 'react';
+import { Route, Routes, BrowserRouter as Router, Navigate } from 'react-router-dom';
+import { I18nextProvider } from 'react-i18next';
+import i18n from '@/i18n/config.js';
+import ScrollToTop from '@/components/ScrollToTop.jsx';
+import { AuthProvider, useAuth } from '@/contexts/AuthContext.jsx';
+import ProtectedRoute from '@/components/ProtectedRoute.jsx';
+import { MainLayout } from '@/components/layout';
+
+import LoginPage from '@/pages/LoginPage.jsx';
+import SignupPage from '@/pages/SignupPage.jsx';
+
+// User Pages
+import UserDashboard from '@/pages/UserDashboard.jsx';
+import CreateTicketPage from '@/pages/CreateTicketPage.jsx';
+import UserTicketsPage from '@/pages/UserTicketsPage.jsx';
+import TicketDetailPage from '@/pages/TicketDetailPage.jsx';
+import ChatListPage from '@/pages/ChatListPage.jsx';
+import ChatDetailPage from '@/pages/ChatDetailPage.jsx';
+import UserSettingsPage from '@/pages/UserSettingsPage.jsx';
+
+// Technician Pages
+import TechnicianDashboard from '@/pages/technician/TechnicianDashboard.jsx';
+import TechnicianQueuePage from '@/pages/technician/TechnicianQueuePage.jsx';
+import TechnicianTicketsPage from '@/pages/technician/TechnicianTicketsPage.jsx';
+import TechnicianTicketDetailPage from '@/pages/technician/TechnicianTicketDetailPage.jsx';
+import TechnicianChatsPage from '@/pages/technician/TechnicianChatsPage.jsx';
+import TechnicianSettingsPage from '@/pages/technician/TechnicianSettingsPage.jsx';
+
+// Admin Pages
+import AdminDashboard from '@/pages/admin/AdminDashboard.jsx';
+import AllTicketsPage from '@/pages/admin/AllTicketsPage.jsx';
+import AdminTicketDetailPage from '@/pages/admin/AdminTicketDetailPage.jsx';
+import TicketHistoryPage from '@/pages/admin/TicketHistoryPage.jsx';
+import ManageUsersPage from '@/pages/admin/ManageUsersPage.jsx';
+import ManageTechniciansPage from '@/pages/admin/ManageTechniciansPage.jsx';
+import ChatMonitoringPage from '@/pages/admin/ChatMonitoringPage.jsx';
+import ActivityLogsPage from '@/pages/admin/ActivityLogsPage.jsx';
+import SystemSettingsPage from '@/pages/admin/SystemSettingsPage.jsx';
+
+import { Toaster } from '@/components/ui/sonner.jsx';
+
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex h-screen w-full items-center justify-center flex-col gap-4">
+          <h2 className="text-2xl font-bold">Terjadi Kesalahan (500)</h2>
+          <p className="text-muted-foreground">Aplikasi mengalami kendala teknis.</p>
+          <button onClick={() => window.location.href='/'} className="px-4 py-2 bg-primary text-primary-foreground rounded-lg">Muat Ulang</button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+function RootRedirect() {
+  const { currentUser } = useAuth();
+  if (!currentUser) return <Navigate to="/login" replace />;
+  if (currentUser.role === 'Admin') return <Navigate to="/admin/dashboard" replace />;
+  if (currentUser.role === 'Teknisi') return <Navigate to="/technician/dashboard" replace />;
+  return <Navigate to="/user/dashboard" replace />;
+}
+
+function AppRoutes() {
+  return (
+    <Routes>
+      <Route path="/" element={<RootRedirect />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignupPage />} />
+
+      {/* User Routes */}
+      <Route path="/user" element={
+        <ProtectedRoute allowedRoles={['User']}>
+          <MainLayout />
+        </ProtectedRoute>
+      }>
+        <Route path="dashboard" element={<UserDashboard />} />
+        <Route path="create-ticket" element={<CreateTicketPage />} />
+        <Route path="tickets" element={<UserTicketsPage />} />
+        <Route path="tickets/:id" element={<TicketDetailPage />} />
+        <Route path="chats" element={<ChatListPage />} />
+        <Route path="chats/:chatId" element={<ChatDetailPage />} />
+        <Route path="settings" element={<UserSettingsPage />} />
+      </Route>
+
+      {/* Technician Routes */}
+      <Route path="/technician" element={
+        <ProtectedRoute allowedRoles={['Teknisi']}>
+          <MainLayout />
+        </ProtectedRoute>
+      }>
+        <Route path="dashboard" element={<TechnicianDashboard />} />
+        <Route path="queue" element={<TechnicianQueuePage />} />
+        <Route path="tickets" element={<TechnicianTicketsPage />} />
+        <Route path="tickets/:ticketId" element={<TechnicianTicketDetailPage />} />
+        <Route path="chats" element={<TechnicianChatsPage />} />
+        <Route path="settings" element={<TechnicianSettingsPage />} />
+      </Route>
+
+      {/* Admin Routes */}
+      <Route path="/admin" element={
+        <ProtectedRoute allowedRoles={['Admin']}>
+          <MainLayout />
+        </ProtectedRoute>
+      }>
+        <Route path="dashboard" element={<AdminDashboard />} />
+        <Route path="tickets" element={<AllTicketsPage />} />
+        <Route path="tickets/:id" element={<AdminTicketDetailPage />} />
+        <Route path="ticket-history" element={<TicketHistoryPage />} />
+        <Route path="users" element={<ManageUsersPage />} />
+        <Route path="technicians" element={<ManageTechniciansPage />} />
+        <Route path="chats" element={<ChatMonitoringPage />} />
+        <Route path="activity-logs" element={<ActivityLogsPage />} />
+        <Route path="settings" element={<SystemSettingsPage />} />
+      </Route>
+
+      <Route path="*" element={
+        <div className="flex h-screen items-center justify-center flex-col gap-4">
+          <h1 className="text-4xl font-bold">404</h1>
+          <p>Halaman tidak ditemukan</p>
+          <a href="/" className="text-primary hover:underline">Kembali ke Beranda</a>
+        </div>
+      } />
+    </Routes>
+  );
+}
+
+function App() {
+  const [apiStatus, setApiStatus] = useState({
+    offline: false,
+    reason: null,
+  });
+
+  useEffect(() => {
+    const savedLang = localStorage.getItem('app_language');
+    if (savedLang) {
+      const lowerLang = savedLang.toLowerCase();
+      if (i18n && i18n.changeLanguage) {
+        i18n.changeLanguage(lowerLang);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('app_theme');
+    const savedUser = localStorage.getItem('helpdesk_user');
+
+    let userTheme = null;
+    if (savedUser) {
+      try {
+        userTheme = JSON.parse(savedUser)?.theme;
+      } catch (_) {
+        userTheme = null;
+      }
+    }
+
+    const effectiveTheme = savedTheme || userTheme || 'dark';
+    if (!savedTheme && !userTheme) {
+      localStorage.setItem('app_theme', effectiveTheme);
+    }
+    document.documentElement.classList.toggle('dark', effectiveTheme === 'dark');
+  }, []);
+
+  useEffect(() => {
+    const handleApiStatus = (event) => {
+      const { offline = false, reason = null } = event.detail || {};
+      setApiStatus({ offline, reason });
+    };
+
+    window.addEventListener('api:status', handleApiStatus);
+    return () => window.removeEventListener('api:status', handleApiStatus);
+  }, []);
+
+  return (
+    <ErrorBoundary>
+      <I18nextProvider i18n={i18n}>
+        <Router>
+          {apiStatus.offline && (
+            <div className="sticky top-0 z-[60] w-full bg-destructive text-destructive-foreground px-4 py-2 text-sm text-center shadow-sm">
+              Koneksi ke server bermasalah. Beberapa fitur mungkin tidak tersedia.
+            </div>
+          )}
+          <ScrollToTop />
+          <AuthProvider>
+            <AppRoutes />
+            <Toaster position="top-center" />
+          </AuthProvider>
+        </Router>
+      </I18nextProvider>
+    </ErrorBoundary>
+  );
+}
+
+export default App;

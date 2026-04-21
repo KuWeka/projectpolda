@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  api:
+    image: ${API_IMAGE:-ghcr.io/example/helpdesk-backend:latest}
+    build: null
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
+      - JWT_EXPIRES=${JWT_EXPIRES:-1h}
+      - JWT_REFRESH_EXPIRES=${JWT_REFRESH_EXPIRES:-7d}
+      - CORS_ORIGIN=${CORS_ORIGIN}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  mysql:
+    restart: unless-stopped
+
+  redis:
+    restart: unless-stopped

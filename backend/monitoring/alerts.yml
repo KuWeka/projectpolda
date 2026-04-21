@@ -1,0 +1,20 @@
+groups:
+  - name: helpdesk-api-alerts
+    rules:
+      - alert: HelpdeskHighErrorRate
+        expr: sum(rate(helpdesk_http_requests_total{status_code=~"5.."}[5m])) / sum(rate(helpdesk_http_requests_total[5m])) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High 5xx error rate"
+          description: "Helpdesk API 5xx ratio is above 5% for 5 minutes."
+
+      - alert: HelpdeskHighLatencyP95
+        expr: histogram_quantile(0.95, sum(rate(helpdesk_http_request_duration_ms_bucket[5m])) by (le, route)) > 1000
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High p95 latency"
+          description: "p95 latency is above 1000ms for at least one route."

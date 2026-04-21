@@ -1,0 +1,195 @@
+
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/contexts/AuthContext.jsx';
+import api from '@/lib/api.js';
+import { Button } from '@/components/ui/button.jsx';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card.jsx';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.jsx';
+import { Skeleton } from '@/components/ui/skeleton.jsx';
+import { MessageSquare, PlusCircle, ArrowRight, AlertCircle, Clock, CheckCircle2 } from 'lucide-react';
+import StatusBadge from '@/components/StatusBadge.jsx';
+import { format } from 'date-fns';
+import { TICKET_STATUS } from '@/lib/constants.js';
+
+const extractItems = (payload) => {
+  if (Array.isArray(payload?.data)) return payload.data;
+  if (Array.isArray(payload?.items)) return payload.items;
+  if (Array.isArray(payload)) return payload;
+  return [];
+};
+
+const safeFormatDate = (value, pattern = 'dd MMM yyyy') => {
+  if (!value) return '-';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '-';
+  return format(date, pattern);
+};
+
+export default function UserDashboard() {
+  const { t } = useTranslation();
+  const { currentUser } = useAuth();
+  const [tickets, setTickets] = useState([]);
+  const [stats, setStats] = useState({ pending: 0, proses: 0, selesai: 0 });
+  const [isLoading, setIsLoading] = useState(true);
+  const [userDivision, setUserDivision] = useState('');
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const res = await api.get('/tickets');
+        const allData = extractItems(res.data);
+        
+        setTickets(allData.slice(0, 10));
+
+        const newStats = { pending: 0, proses: 0, selesai: 0 };
+        allData.forEach(tk => {
+          if (tk.status === TICKET_STATUS.PENDING) newStats.pending++;
+          if (tk.status === TICKET_STATUS.PROSES) newStats.proses++;
+          if (tk.status === TICKET_STATUS.SELESAI) newStats.selesai++;
+        });
+        setStats(newStats);
+
+      } catch (err) {
+        console.error('Error fetching dashboard data:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (currentUser) {
+      fetchDashboardData();
+    }
+  }, [currentUser]);
+
+  return (
+    <div className="animate-in fade-in slide-in-from-bottom-4 flex flex-col gap-8 duration-500">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">{t('dashboard.user_title', 'Dashboard User')}</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            {t('dashboard.hello', 'Halo')}, <span className="font-medium text-foreground">{currentUser?.name}</span>
+            {userDivision && <span> dari <span className="font-medium text-foreground">{userDivision}</span></span>}
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Button variant="outline" className="gap-2 bg-background shadow-sm" asChild>
+            <Link to="/user/chats">
+              <MessageSquare className="h-4 w-4" />
+              Chat Teknisi
+            </Link>
+          </Button>
+          <Button asChild className="gap-2 shadow-sm">
+            <Link to="/user/create-ticket">
+              <PlusCircle className="h-4 w-4" />
+              {t('buttons.create_ticket', 'Buat Tiket Baru')}
+            </Link>
+          </Button>
+        </div>
+      </div>
+
+      {isLoading ? (
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Card key={i}>
+              <CardHeader className="pb-2">
+                <Skeleton className="h-4 w-24" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-8 w-16" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          {[
+            { title: t('status.pending', 'Pending'), value: stats.pending, icon: Clock, note: 'Tiket menunggu diproses' },
+            { title: t('status.proses', 'Proses'), value: stats.proses, icon: AlertCircle, note: 'Sedang dalam penanganan' },
+            { title: t('status.selesai', 'Selesai'), value: stats.selesai, icon: CheckCircle2, note: 'Sudah dituntaskan' },
+          ].map((item) => (
+            <Card key={item.title} className="border-border bg-card/95 shadow-sm">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">{item.title}</CardTitle>
+                <item.icon className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{item.value}</div>
+                <p className="text-xs text-muted-foreground mt-1">{item.note}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      <Card className="border-border bg-card/95 shadow-sm">
+        <CardHeader className="flex flex-row items-center justify-between pb-4">
+          <CardTitle className="text-xl">Tiket Terkini</CardTitle>
+          <Link to="/user/tickets" className="text-sm font-medium text-primary flex items-center gap-1 hover:underline">
+            Lihat Semua <ArrowRight className="h-4 w-4" />
+          </Link>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-xl border border-border overflow-hidden">
+            <Table>
+              <TableHeader className="bg-muted/50">
+                <TableRow>
+                  <TableHead>ID Tiket</TableHead>
+                  <TableHead>Judul</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Teknisi</TableHead>
+                  <TableHead>Tanggal</TableHead>
+                  <TableHead className="text-right">Aksi</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {isLoading ? (
+                  Array(3).fill(0).map((_, i) => (
+                    <TableRow key={i}>
+                      <TableCell><Skeleton className="h-5 w-20" /></TableCell>
+                      <TableCell><Skeleton className="h-5 w-48" /></TableCell>
+                      <TableCell><Skeleton className="h-6 w-24 rounded-full" /></TableCell>
+                      <TableCell><Skeleton className="h-5 w-32" /></TableCell>
+                      <TableCell><Skeleton className="h-5 w-24" /></TableCell>
+                      <TableCell className="text-right"><Skeleton className="h-8 w-16 ml-auto" /></TableCell>
+                    </TableRow>
+                  ))
+                ) : tickets.length > 0 ? (
+                  tickets.map((ticket) => (
+                    <TableRow key={ticket.id} className="hover:bg-muted/30 transition-colors">
+                      <TableCell className="font-medium font-mono text-sm">{ticket.ticket_number}</TableCell>
+                      <TableCell className="max-w-[200px] truncate" title={ticket.title}>{ticket.title}</TableCell>
+                      <TableCell>
+                        <StatusBadge status={ticket.status} />
+                      </TableCell>
+                      <TableCell>
+                        {ticket.technician_name || (
+                          <span className="text-muted-foreground italic">Belum ada</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
+                        {safeFormatDate(ticket.created_at || ticket.created)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button variant="ghost" size="sm" asChild>
+                          <Link to={`/user/tickets/${ticket.id}`}>Detail</Link>
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={6} className="h-32 text-center text-muted-foreground">
+                      {t('tickets.no_tickets', 'Tidak ada tiket')}
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

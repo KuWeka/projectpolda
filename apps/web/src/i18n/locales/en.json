@@ -1,0 +1,59 @@
+
+{
+  "login": {
+    "title": "Welcome",
+    "subtitle": "Sign in to your Helpdesk account",
+    "identifier": "Email or Username",
+    "password": "Password",
+    "forgot": "Forgot password?",
+    "submit": "Sign In",
+    "loading": "Processing...",
+    "error_wrong_credentials": "Wrong Email/Username or password",
+    "no_account": "Don't have an account?",
+    "register_here": "Register here"
+  },
+  "dashboard": {
+    "user_title": "Dashboard",
+    "tech_title": "Technician Dashboard",
+    "admin_title": "Admin Dashboard",
+    "hello": "Hello"
+  },
+  "buttons": {
+    "chat_tech": "Chat Technician",
+    "create_ticket": "Create Ticket",
+    "random_select": "Random Select",
+    "cancel": "Cancel",
+    "continue": "Continue",
+    "back": "Back"
+  },
+  "status": {
+    "pending": "Pending",
+    "proses": "In Progress",
+    "selesai": "Completed",
+    "dibatalkan": "Cancelled",
+    "ditolak": "Rejected"
+  },
+  "roles": {
+    "admin": "Admin",
+    "user": "User",
+    "technician": "Technician"
+  },
+  "chat": {
+    "new_chat": "New Chat",
+    "no_tech_available": "No technicians available",
+    "select_tech": "Select an active technician to start a conversation."
+  },
+  "tickets": {
+    "no_tickets": "No tickets",
+    "reporter": "Reporter",
+    "unknown_user": "User not found",
+    "queue": "Ticket Queue"
+  },
+  "admin": {
+    "manage_users": "User Management",
+    "manage_techs": "Technician Management",
+    "total_users": "Total: {{count}} users",
+    "total_techs": "Total: {{count}} technicians",
+    "active_techs": "Active Technicians"
+  }
+}

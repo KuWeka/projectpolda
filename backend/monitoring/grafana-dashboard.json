@@ -1,0 +1,33 @@
+{
+  "title": "Helpdesk API Overview",
+  "schemaVersion": 39,
+  "version": 1,
+  "time": { "from": "now-6h", "to": "now" },
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "HTTP Requests/sec",
+      "targets": [
+        { "expr": "sum(rate(helpdesk_http_requests_total[1m]))" }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "HTTP p95 Latency (ms)",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(helpdesk_http_request_duration_ms_bucket[5m])) by (le))"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "5xx Error Rate",
+      "targets": [
+        {
+          "expr": "sum(rate(helpdesk_http_requests_total{status_code=~\"5..\"}[5m])) / sum(rate(helpdesk_http_requests_total[5m]))"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+
+{
+  "login": {
+    "title": "Selamat Datang",
+    "subtitle": "Masuk ke akun Helpdesk Anda",
+    "identifier": "Email atau Username",
+    "password": "Password",
+    "forgot": "Lupa password?",
+    "submit": "Masuk",
+    "loading": "Memproses...",
+    "error_wrong_credentials": "Email/Username atau password salah",
+    "no_account": "Belum punya akun?",
+    "register_here": "Daftar di sini"
+  },
+  "dashboard": {
+    "user_title": "Dashboard",
+    "tech_title": "Dashboard Teknisi",
+    "admin_title": "Dashboard Admin",
+    "hello": "Halo"
+  },
+  "buttons": {
+    "chat_tech": "Chat Teknisi",
+    "create_ticket": "Buat Tiket",
+    "random_select": "Pilih Acak",
+    "cancel": "Batal",
+    "continue": "Lanjut",
+    "back": "Kembali"
+  },
+  "status": {
+    "pending": "Pending",
+    "proses": "Proses",
+    "selesai": "Selesai",
+    "dibatalkan": "Dibatalkan",
+    "ditolak": "Ditolak"
+  },
+  "roles": {
+    "admin": "Admin",
+    "user": "User",
+    "technician": "Teknisi"
+  },
+  "chat": {
+    "new_chat": "Chat Baru",
+    "no_tech_available": "Tidak ada teknisi tersedia",
+    "select_tech": "Pilih teknisi yang sedang aktif untuk memulai percakapan."
+  },
+  "tickets": {
+    "no_tickets": "Tidak ada tiket",
+    "reporter": "Pelapor",
+    "unknown_user": "Pengguna tidak ditemukan",
+    "queue": "Antrian Tiket"
+  },
+  "admin": {
+    "manage_users": "Manajemen Pengguna",
+    "manage_techs": "Manajemen Teknisi",
+    "total_users": "Total: {{count}} pengguna",
+    "total_techs": "Total: {{count}} teknisi",
+    "active_techs": "Teknisi Aktif"
+  }
+}

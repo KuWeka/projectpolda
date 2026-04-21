@@ -1,0 +1,87 @@
+:root {
+  --radius: 0.85rem;
+  --background: 0 0% 100%;
+  --foreground: 221 39% 11%;
+  --card: 210 20% 99%;
+  --card-foreground: 221 39% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 221 39% 11%;
+  --primary: 214 84% 36%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 210 34% 94%;
+  --secondary-foreground: 221 39% 11%;
+  --muted: 210 28% 95%;
+  --muted-foreground: 215 16% 38%;
+  --accent: 38 92% 50%;
+  --accent-foreground: 221 39% 11%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 214 25% 88%;
+  --input: 214 25% 88%;
+  --ring: 214 84% 36%;
+  --chart-1: 214 84% 36%;
+  --chart-2: 38 92% 50%;
+  --chart-3: 172 66% 39%;
+  --chart-4: 262 52% 47%;
+  --chart-5: 12 76% 56%;
+
+  /* Sidebar variables */
+  --sidebar: 210 25% 97%;
+  --sidebar-foreground: 221 39% 11%;
+  --sidebar-primary: 214 84% 36%;
+  --sidebar-primary-foreground: 0 0% 98%;
+  --sidebar-accent: 210 34% 92%;
+  --sidebar-accent-foreground: 221 39% 11%;
+  --sidebar-border: 214 25% 88%;
+  --sidebar-ring: 214 84% 36%;
+
+  /* Status Colors */
+  --status-pending: 38 92% 50%;
+  --status-proses: 262 83% 58%;
+  --status-selesai: 142 76% 36%;
+  --status-dibatalkan: 25 95% 53%;
+  --status-ditolak: 0 84% 60%;
+
+  /* Urgency Colors */
+  --urgency-rendah: 142 76% 36%;
+  --urgency-sedang: 38 92% 50%;
+  --urgency-tinggi: 25 95% 53%;
+  --urgency-darurat: 0 84% 60%;
+}
+
+.dark {
+  --background: 222 47% 9%;
+  --foreground: 0 0% 98%;
+  --card: 222 42% 12%;
+  --card-foreground: 0 0% 98%;
+  --popover: 222 42% 12%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 208 94% 58%;
+  --primary-foreground: 0 0% 98%;
+  --secondary: 221 32% 18%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 221 32% 18%;
+  --muted-foreground: 215 18% 72%;
+  --accent: 38 92% 50%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 85.7% 97.3%;
+  --border: 220 27% 22%;
+  --input: 220 27% 22%;
+  --ring: 208 94% 58%;
+  --chart-1: 208 94% 58%;
+  --chart-2: 38 92% 50%;
+  --chart-3: 172 66% 44%;
+  --chart-4: 262 52% 60%;
+  --chart-5: 12 76% 61%;
+
+  /* Dark sidebar */
+  --sidebar: 222 38% 11%;
+  --sidebar-foreground: 0 0% 96%;
+  --sidebar-primary: 208 94% 58%;
+  --sidebar-primary-foreground: 0 0% 98%;
+  --sidebar-accent: 221 32% 18%;
+  --sidebar-accent-foreground: 0 0% 98%;
+  --sidebar-border: 220 27% 22%;
+  --sidebar-ring: 208 94% 58%;
+}

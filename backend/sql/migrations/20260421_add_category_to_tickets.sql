@@ -1,0 +1,1 @@
+ALTER TABLE tickets ADD COLUMN category VARCHAR(100) DEFAULT NULL AFTER urgency;
