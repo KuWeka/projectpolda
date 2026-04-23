@@ -12,10 +12,16 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 
 // ===== LOGGER & SWAGGER SETUP =====
 const logger = require('./utils/logger');
-const { swaggerUi, swaggerSpec } = require('./utils/swagger');
 const { cache } = require('./utils/cache');
 const { metricsMiddleware } = require('./utils/metrics');
 const { warmStartupCache } = require('./utils/cacheWarmup');
+
+const isSwaggerEnabled = () => {
+  if (typeof process.env.ENABLE_SWAGGER === 'string') {
+    return process.env.ENABLE_SWAGGER.toLowerCase() === 'true';
+  }
+  return NODE_ENV !== 'production';
+};
 
 const parseAllowedOrigins = () => {
   const fallback = 'http://localhost:5173';
@@ -149,17 +155,22 @@ app.use('/api', apiVersioning);
 app.use('/api', csrfProtection);
 
 // ===== SWAGGER DOCUMENTATION =====
-app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
-  swaggerOptions: {
-    persistAuthorization: true,
-    displayRequestDuration: true,
-    displayOperationDuration: true,
-  },
-  customCss: '.swagger-ui .topbar { display: none }',
-  customSiteTitle: 'Helpdesk API Documentation'
-}));
+if (isSwaggerEnabled()) {
+  const { swaggerUi, swaggerSpec } = require('./utils/swagger');
+  app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+    swaggerOptions: {
+      persistAuthorization: true,
+      displayRequestDuration: true,
+      displayOperationDuration: true,
+    },
+    customCss: '.swagger-ui .topbar { display: none }',
+    customSiteTitle: 'Helpdesk API Documentation'
+  }));
 
-logger.info('Swagger documentation available at /api/docs');
+  logger.info('Swagger documentation available at /api/docs');
+} else {
+  logger.info('Swagger documentation is disabled');
+}
 
 // Static file serving dengan security headers
 app.use('/uploads', (req, res, next) => {

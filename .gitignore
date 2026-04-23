@@ -1,10 +1,18 @@
 node_modules
 dist/
+apps/web/.vite/
 
 # Environment files
 .env
 .env.local
+.env.development.local
+.env.test.local
+.env.staging
 .env.production
+backend/.env
+backend/.env.*
+apps/web/.env
+apps/web/.env.*
 
 # Logs
 backend/logs/*.log
