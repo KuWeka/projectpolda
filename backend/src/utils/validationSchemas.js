@@ -25,7 +25,7 @@ const patterns = {
     'Open', 'In Progress', 'Resolved', 'Closed'
   ),
   urgency: Joi.string().valid(
-    'Rendah', 'Sedang', 'Tinggi', 'Darurat',
+    'Rendah', 'Sedang', 'Tinggi', 'Kritis',
     'Low', 'Medium', 'High', 'Critical'
   ),
   role: Joi.string().valid('Admin', 'Teknisi', 'User'),
@@ -96,7 +96,7 @@ const userSchemas = {
 // Ticket schemas
 const ticketSchemas = {
   create: Joi.object({
-    title: Joi.string().min(5).max(200).trim().required(),
+    title: Joi.string().min(3).max(200).trim().required(),
     description: patterns.description.required(),
     location: Joi.string().max(255).allow('').optional(),
     urgency: patterns.urgency.required(),

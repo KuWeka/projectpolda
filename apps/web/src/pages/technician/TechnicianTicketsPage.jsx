@@ -125,7 +125,7 @@ export default function TechnicianTicketsPage() {
                   <SelectItem value="Rendah">Rendah</SelectItem>
                   <SelectItem value="Sedang">Sedang</SelectItem>
                   <SelectItem value="Tinggi">Tinggi</SelectItem>
-                  <SelectItem value="Darurat">Darurat</SelectItem>
+                  <SelectItem value="Kritis">Kritis</SelectItem>
                 </SelectContent>
               </Select>
 

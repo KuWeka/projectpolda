@@ -12,7 +12,7 @@ export default function UrgencyBadge({ urgency, className }) {
         return 'warning';
       case 'tinggi':
         return 'destructive';
-      case 'darurat':
+      case 'kritis':
         return 'destructive';
       default:
         return 'secondary';

@@ -121,7 +121,7 @@ export default function UserTicketsPage() {
   };
 
   const canChat = (ticket) => {
-    return ticket.status === 'Proses' || (ticket.status === 'Pending' && ticket.urgency === 'Darurat');
+    return ticket.status === 'Proses' || (ticket.status === 'Pending' && ticket.urgency === 'Kritis');
   };
 
   return (

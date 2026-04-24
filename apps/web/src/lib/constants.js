@@ -17,7 +17,7 @@ export const URGENCY_LEVELS = {
   RENDAH: 'Rendah',
   SEDANG: 'Sedang',
   TINGGI: 'Tinggi',
-  DARURAT: 'Darurat'
+  DARURAT: 'Kritis'
 };
 
 export const TECHNICIAN_STATUS = {

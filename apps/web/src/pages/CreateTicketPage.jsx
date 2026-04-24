@@ -97,8 +97,11 @@ export default function CreateTicketPage() {
       toast.success(`Tiket ${ticketNumber} berhasil dibuat`);
       navigate('/user/tickets');
     } catch (error) {
-      const backendMessage = error.response?.data?.message;
-      toast.error('Gagal membuat tiket: ' + (backendMessage || error.message));
+      const data = error.response?.data;
+      const detail = Array.isArray(data?.errors) && data.errors.length
+        ? data.errors.map(e => e.message).join(', ')
+        : (data?.message || error.message);
+      toast.error('Gagal membuat tiket: ' + detail);
     } finally {
       setIsLoading(false);
     }
@@ -181,7 +184,7 @@ export default function CreateTicketPage() {
                       <SelectItem value="Rendah">Rendah (Dapat ditunda)</SelectItem>
                       <SelectItem value="Sedang">Sedang (Mengganggu sebagian kerja)</SelectItem>
                       <SelectItem value="Tinggi">Tinggi (Sangat mengganggu)</SelectItem>
-                      <SelectItem value="Darurat">Darurat (Sistem lumpuh total)</SelectItem>
+                      <SelectItem value="Kritis">Kritis (Sistem lumpuh total)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
