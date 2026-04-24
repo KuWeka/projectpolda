@@ -23,24 +23,24 @@ const refreshTokenMaxAge = parseDurationToMs(process.env.JWT_REFRESH_EXPIRES || 
 
 const getAccessCookieOptions = () => ({
   httpOnly: true,
-  secure: isProduction,
-  sameSite: 'lax',
+  secure: true,
+  sameSite: 'none',
   path: '/',
   maxAge: accessTokenMaxAge,
 });
 
 const getRefreshCookieOptions = () => ({
   httpOnly: true,
-  secure: isProduction,
-  sameSite: 'lax',
+  secure: true,
+  sameSite: 'none',
   path: '/api/auth',
   maxAge: refreshTokenMaxAge,
 });
 
 const getCsrfCookieOptions = () => ({
   httpOnly: false,
-  secure: isProduction,
-  sameSite: 'lax',
+  secure: true,
+  sameSite: 'none',
   path: '/',
   maxAge: refreshTokenMaxAge,
 });
@@ -48,20 +48,20 @@ const getCsrfCookieOptions = () => ({
 const clearAuthCookies = (res) => {
   res.clearCookie(ACCESS_TOKEN_COOKIE_NAME, {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: 'lax',
+    secure: true,
+    sameSite: 'none',
     path: '/',
   });
   res.clearCookie(REFRESH_TOKEN_COOKIE_NAME, {
     httpOnly: true,
-    secure: isProduction,
-    sameSite: 'lax',
+    secure: true,
+    sameSite: 'none',
     path: '/api/auth',
   });
   res.clearCookie(CSRF_COOKIE_NAME, {
     httpOnly: false,
-    secure: isProduction,
-    sameSite: 'lax',
+    secure: true,
+    sameSite: 'none',
     path: '/',
   });
 };
@@ -79,13 +79,12 @@ const issueAuthCookies = (res, accessToken, refreshToken) => {
 // Rate limiter for login attempts
 // Limit 5 attempts per 15 minutes per IP
 const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // limit each IP to 5 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 5,
   message: 'Terlalu banyak percobaan login. Silakan coba lagi dalam 15 menit.',
-  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  standardHeaders: true,
+  legacyHeaders: false,
   skip: (req) => {
-    // Skip rate limiting for non-login requests
     return req.method !== 'POST' || !req.path.includes('/login');
   }
 });
@@ -93,7 +92,7 @@ const loginLimiter = rateLimit({
 // Rate limiter for register attempts
 // Limit 3 registration attempts per hour per IP
 const registerLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
+  windowMs: 60 * 60 * 1000,
   max: 3,
   message: 'Terlalu banyak percobaan registrasi. Silakan coba lagi dalam 1 jam.',
   skip: (req) => {
@@ -129,7 +128,7 @@ router.post('/login', validate(authSchemas.login), asyncHandler(async (req, res)
     return res.status(401).json(ApiResponse.error('Email/Username atau password salah', null, 401));
   }
 
-  // Generate access token (short-lived: 1 hour)
+  // Generate access token (short-lived)
   const accessToken = jwt.sign(
     {
       id: user.id,
@@ -141,7 +140,7 @@ router.post('/login', validate(authSchemas.login), asyncHandler(async (req, res)
     { expiresIn: process.env.JWT_EXPIRES || '1h' }
   );
 
-  // Generate refresh token (long-lived: 7 days)
+  // Generate refresh token (long-lived)
   const refreshToken = jwt.sign(
     { id: user.id },
     process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET,
@@ -188,8 +187,7 @@ router.post('/register', validate(authSchemas.register), asyncHandler(async (req
 
 /**
  * POST /api/auth/refresh
- * Refresh access token using refresh token
- * Body: { refreshToken: string }
+ * Refresh access token using refresh token cookie
  */
 router.post('/refresh', asyncHandler(async (req, res) => {
   const cookies = parseCookies(req);
@@ -227,6 +225,7 @@ router.post('/refresh', asyncHandler(async (req, res) => {
       { expiresIn: process.env.JWT_EXPIRES || '1h' }
     );
 
+    // Rotate refresh token
     const rotatedRefreshToken = jwt.sign(
       { id: user.id },
       process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET,
@@ -247,6 +246,9 @@ router.post('/refresh', asyncHandler(async (req, res) => {
   }
 }));
 
+/**
+ * POST /api/auth/logout
+ */
 router.post('/logout', auth, asyncHandler(async (req, res) => {
   clearAuthCookies(res);
   return res.json(ApiResponse.success(null, 'Logout berhasil'));
@@ -255,7 +257,6 @@ router.post('/logout', auth, asyncHandler(async (req, res) => {
 /**
  * GET /api/auth/me
  * Get current user info
- * Headers: { Authorization: "Bearer <token>" }
  */
 router.get('/me', auth, asyncHandler(async (req, res) => {
   const user = await UserService.getUserById(req.user.id);
