@@ -8,6 +8,7 @@ const { userSchemas } = require('../utils/validationSchemas');
 const { ApiResponse } = require('../utils/apiResponse');
 const UserService = require('../services/UserService');
 const { invalidateAllDashboardCaches } = require('../utils/dashboardCache');
+const pool = require('../config/db');
 
 /**
  * GET /api/users
@@ -111,6 +112,14 @@ router.patch('/:id', auth, asyncHandler(async (req, res) => {
 
     if (!updatedUser) {
       return res.status(404).json(ApiResponse.error('User tidak ditemukan', null, 404));
+    }
+
+    // Auto-create technician_settings row when role is changed to Teknisi
+    if (updates.role === 'Teknisi') {
+      await pool.query(
+        `INSERT IGNORE INTO technician_settings (user_id, is_active) VALUES (?, 1)`,
+        [id]
+      );
     }
 
     await invalidateAllDashboardCaches();
