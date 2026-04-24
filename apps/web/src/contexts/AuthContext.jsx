@@ -22,15 +22,21 @@ export const AuthProvider = ({ children }) => {
       try {
         const res = await api.get('/auth/me');
         const user = res.data?.data?.user || null;
+        const csrfToken = res.data?.data?.csrfToken;
         setCurrentUser(user);
 
         if (user) {
           localStorage.setItem('helpdesk_user', JSON.stringify(user));
+          if (csrfToken) {
+            localStorage.setItem('helpdesk_csrf_token', csrfToken);
+          }
         } else {
           localStorage.removeItem('helpdesk_user');
+          localStorage.removeItem('helpdesk_csrf_token');
         }
       } catch (err) {
         localStorage.removeItem('helpdesk_user');
+        localStorage.removeItem('helpdesk_csrf_token');
         setCurrentUser(null);
       } finally {
         setIsLoading(false);

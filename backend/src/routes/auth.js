@@ -265,8 +265,14 @@ router.get('/me', auth, asyncHandler(async (req, res) => {
     return res.status(404).json(ApiResponse.error('User tidak ditemukan', null, 404));
   }
 
+  // Re-issue CSRF token so cross-origin clients (e.g. Vercel) can store it
+  const csrfToken = crypto.randomBytes(32).toString('hex');
+  const { CSRF_COOKIE_NAME } = require('../middleware/csrf');
+  res.cookie(CSRF_COOKIE_NAME, csrfToken, getCsrfCookieOptions());
+
   res.json(ApiResponse.success({
-    user
+    user,
+    csrfToken
   }));
 }));
 
