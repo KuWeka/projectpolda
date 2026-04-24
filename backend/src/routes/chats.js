@@ -43,21 +43,25 @@ router.get('/', auth, asyncHandler(async (req, res) => {
       LEFT JOIN tickets tk ON c.ticket_id = tk.id
     `;
 
+  // Lookup real role from DB (JWT may be stale after role change)
+  const [[dbUser]] = await pool.query('SELECT role FROM users WHERE id = ? AND is_active = 1 LIMIT 1', [req.user.id]);
+  const actualRole = dbUser?.role || req.user.role;
+
   const qb = new QueryBuilder(baseQuery);
 
   // Apply role-based filtering
-  if (req.user.role === 'User') {
+  if (actualRole === 'User') {
     qb.where('c.user_id = ?', req.user.id);
-  } else if (req.user.role === 'Teknisi') {
+  } else if (actualRole === 'Teknisi') {
     qb.where('c.technician_id = ?', req.user.id);
   }
 
   // Apply additional filters
-  if (user_id && req.user.role === 'Admin') {
+  if (user_id && actualRole === 'Admin') {
     qb.where('c.user_id = ?', user_id);
   }
 
-  if (technician_id && req.user.role === 'Admin') {
+  if (technician_id && actualRole === 'Admin') {
     qb.where('c.technician_id = ?', technician_id);
   }
 
@@ -126,15 +130,19 @@ router.get('/:id', auth, asyncHandler(async (req, res) => {
 
   const chat = normalizeChat(rows[0]);
 
+  // Lookup real role from DB (JWT may be stale after role change)
+  const [[dbUserDetail]] = await pool.query('SELECT role FROM users WHERE id = ? AND is_active = 1 LIMIT 1', [req.user.id]);
+  const actualRoleDetail = dbUserDetail?.role || req.user.role;
+
   // Permission check
-  if (req.user.role === 'User' && chat.user_id !== req.user.id) {
+  if (actualRoleDetail === 'User' && chat.user_id !== req.user.id) {
     return res.status(403).json({
       success: false,
       message: 'Tidak memiliki izin mengakses chat ini'
     });
   }
 
-  if (req.user.role === 'Teknisi' && chat.technician_id !== req.user.id) {
+  if (actualRoleDetail === 'Teknisi' && chat.technician_id !== req.user.id) {
     return res.status(403).json({
       success: false,
       message: 'Tidak memiliki izin mengakses chat ini'
