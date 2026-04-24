@@ -15,14 +15,18 @@ const { invalidateAllDashboardCaches } = require('../utils/dashboardCache');
 router.get('/', auth, validateQuery(ticketSchemas.list), asyncHandler(async (req, res) => {
   const { status, urgency, user_id, assigned_technician_id, unassigned, from, to, search, page, perPage, sort, order } = req.query;
 
+  // Lookup real role from DB (JWT may be stale after role change)
+  const [[dbUser]] = await pool.query('SELECT role FROM users WHERE id = ? AND is_active = 1 LIMIT 1', [req.user.id]);
+  const actualRole = dbUser?.role || req.user.role;
+
   // Role-based filtering
   let effectiveUserId = user_id;
   let effectiveAssignedTechnicianId = assigned_technician_id;
 
-  if (req.user.role === 'User') {
+  if (actualRole === 'User') {
     // Users can only see their own tickets
     effectiveUserId = req.user.id;
-  } else if (req.user.role === 'Teknisi') {
+  } else if (actualRole === 'Teknisi') {
     // Technicians default to their own assigned tickets.
     // Use unassigned=true to access queue tickets not assigned to any technician.
     if (unassigned === true) {
@@ -163,7 +167,12 @@ router.get('/:id', auth, asyncHandler(async (req, res) => {
   if (rows.length === 0) return res.status(404).json({ message: 'Ticket not found' });
 
   const ticket = rows[0];
-  if (req.user.role === 'User' && ticket.user_id !== req.user.id) {
+
+  // Lookup real role from DB (JWT may be stale after role change)
+  const [[dbUser]] = await pool.query('SELECT role FROM users WHERE id = ? AND is_active = 1 LIMIT 1', [req.user.id]);
+  const actualRole = dbUser?.role || req.user.role;
+
+  if (actualRole === 'User' && ticket.user_id !== req.user.id) {
     return res.status(403).json({ message: 'Forbidden' });
   }
 

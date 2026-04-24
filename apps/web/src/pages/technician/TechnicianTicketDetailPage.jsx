@@ -64,8 +64,8 @@ export default function TechnicianTicketDetailPage() {
 
     } catch (err) {
       console.error('Error fetching ticket ID:', ticketId, err.response || err);
-      
-      if (err.status === 404 || err.status === 403) {
+      const status = err.response?.status;
+      if (status === 404 || status === 403) {
         setTicketError('Tiket tidak ditemukan atau Anda tidak memiliki akses.');
       } else {
         setTicketError('Gagal memuat tiket. Silakan coba lagi.');
