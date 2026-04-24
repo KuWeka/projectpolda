@@ -125,7 +125,6 @@ tests/
 
 # Backups and generated artifacts
 backups/
-*.sql
 *.sarif
 *.spdx.json
 *.cdx.json
