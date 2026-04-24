@@ -53,7 +53,7 @@ const buildNotificationsFromSummary = (summary = {}, role = 'User') => {
 
 export function Header() {
   const { currentUser, setCurrentUser, logout } = useAuth();
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const { pathname } = useLocation();
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -79,7 +79,11 @@ export function Header() {
       try {
         const { data } = await api.get('/tickets/summary');
         const summary = data?.data?.summary || data?.summary || {};
-        const items = buildNotificationsFromSummary(summary, currentUser.role);
+        const items = buildNotificationsFromSummary(summary, currentUser.role).map((item) => ({
+          ...item,
+          title: t(`header.notifications.${item.id}.title`, item.title),
+          detail: t(`header.notifications.${item.id}.detail`, { detail: item.detail, defaultValue: item.detail }),
+        }));
         setNotifications(items);
 
         const totalUnread = toNumber(summary.pending) + toNumber(summary.urgent_count);
@@ -93,7 +97,7 @@ export function Header() {
     fetchNotifications();
     const intervalId = setInterval(fetchNotifications, 60000);
     return () => clearInterval(intervalId);
-  }, [currentUser, pathname]);
+  }, [currentUser, pathname, t]);
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
@@ -120,32 +124,32 @@ export function Header() {
     const page = segments[1] || 'dashboard';
 
     const roleLabel =
-      role === 'admin' ? 'Admin' : role === 'technician' ? 'Teknisi' : 'User';
+      role === 'admin' ? t('roles.admin', 'Admin') : role === 'technician' ? t('roles.technician', 'Teknisi') : t('roles.user', 'User');
 
     const mapByRole = {
       user: {
-        dashboard: 'Dashboard',
-        'create-ticket': 'Buat Tiket',
-        tickets: 'Tiket Saya',
-        chats: 'Chat',
-        settings: 'Pengaturan',
+        dashboard: t('nav.item.Dashboard', 'Dashboard'),
+        'create-ticket': t('nav.item.Buat Tiket', 'Buat Tiket'),
+        tickets: t('nav.item.Tiket Saya', 'Tiket Saya'),
+        chats: t('nav.item.Chat', 'Chat'),
+        settings: t('nav.item.Pengaturan', 'Pengaturan'),
       },
       technician: {
-        dashboard: 'Dashboard',
-        queue: 'Antrian Tiket',
-        tickets: 'Tiket Saya',
-        chats: 'Chat',
-        settings: 'Pengaturan',
+        dashboard: t('nav.item.Dashboard', 'Dashboard'),
+        queue: t('nav.item.Antrian Tiket', 'Antrian Tiket'),
+        tickets: t('nav.item.Tiket Saya', 'Tiket Saya'),
+        chats: t('nav.item.Chat', 'Chat'),
+        settings: t('nav.item.Pengaturan', 'Pengaturan'),
       },
       admin: {
-        dashboard: 'Dashboard',
-        tickets: 'Semua Tiket',
-        'ticket-history': 'Riwayat Tiket',
-        users: 'Kelola User',
-        technicians: 'Kelola Teknisi',
-        chats: 'Monitoring Chat',
-        'activity-logs': 'Log Aktivitas',
-        settings: 'Pengaturan Sistem',
+        dashboard: t('nav.item.Dashboard', 'Dashboard'),
+        tickets: t('nav.item.Semua Tiket', 'Semua Tiket'),
+        'ticket-history': t('nav.item.Riwayat Tiket', 'Riwayat Tiket'),
+        users: t('nav.item.Kelola User', 'Kelola User'),
+        technicians: t('nav.item.Kelola Teknisi', 'Kelola Teknisi'),
+        chats: t('nav.item.Monitoring Chat', 'Monitoring Chat'),
+        'activity-logs': t('nav.item.Log Aktivitas', 'Log Aktivitas'),
+        settings: t('nav.item.Pengaturan Sistem', 'Pengaturan Sistem'),
       },
     };
 
@@ -154,7 +158,7 @@ export function Header() {
       role: roleLabel,
       page: pageLabel || page.replaceAll('-', ' '),
     };
-  }, [pathname]);
+  }, [pathname, t]);
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4">
@@ -177,7 +181,7 @@ export function Header() {
           <div className="hidden sm:flex items-center gap-2 mr-2">
             <div className="flex flex-col items-end">
               <span className="text-sm font-medium">{currentUser.name || 'User'}</span>
-              <span className="text-xs text-muted-foreground">{currentUser.role}</span>
+              <span className="text-xs text-muted-foreground">{currentUser.role === 'Admin' ? t('roles.admin', 'Admin') : currentUser.role === 'Teknisi' ? t('roles.technician', 'Teknisi') : t('roles.user', 'User')}</span>
             </div>
             <Avatar className="size-8">
               <AvatarImage src={currentUser.avatar} alt={currentUser.name || 'User'} />
@@ -201,7 +205,7 @@ export function Header() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-80">
-              <DropdownMenuLabel>Notifikasi</DropdownMenuLabel>
+              <DropdownMenuLabel>{t('header.notifications.label', 'Notifikasi')}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               {notifications.length > 0 ? (
                 notifications.map((item) => (
@@ -212,7 +216,7 @@ export function Header() {
                 ))
               ) : (
                 <DropdownMenuItem className="cursor-default text-sm text-muted-foreground">
-                  Tidak ada notifikasi saat ini
+                  {t('header.notifications.empty', 'Tidak ada notifikasi saat ini')}
                 </DropdownMenuItem>
               )}
             </DropdownMenuContent>

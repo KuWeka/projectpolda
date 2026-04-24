@@ -71,8 +71,7 @@ export default function CreateTicketPage() {
         description: formData.description,
         location: formData.location,
         urgency: formData.urgency,
-        status: 'Pending',
-        user_id: currentUser.id
+        category: 'Umum'
       };
 
       const { data: ticketRecord } = await api.post('/tickets', ticketData);

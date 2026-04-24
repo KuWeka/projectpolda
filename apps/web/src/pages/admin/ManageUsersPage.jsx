@@ -71,7 +71,7 @@ export default function ManageUsersPage() {
       applyFilter(records, roleFilter);
     } catch (err) {
       console.error('Error fetching users:', err);
-      toast.error('Gagal memuat data pengguna');
+      toast.error(t('manageUsers.loadFailed', 'Failed to load user data'));
     } finally {
       setIsLoading(false);
     }
@@ -96,18 +96,18 @@ export default function ManageUsersPage() {
     try {
       if (modalState.user) {
         await api.patch(`/users/${modalState.user.id}`, data);
-        toast.success('Pengguna berhasil diupdate');
+        toast.success(t('manageUsers.updateSuccess', 'User updated successfully'));
       } else {
         await api.post('/users', {
           ...data, emailVisibility: true, verified: true
         });
-        toast.success('Pengguna berhasil ditambahkan');
+        toast.success(t('manageUsers.addSuccess', 'User added successfully'));
       }
       setModalState({ isOpen: false, user: null });
       fetchUsers();
     } catch (error) {
       console.error('Save user error:', error);
-      toast.error(error.response?.message || 'Gagal menyimpan data. Pastikan Anda memiliki hak akses Admin.');
+      toast.error(error.response?.message || t('manageUsers.saveFailed', 'Failed to save data'));
     } finally {
       setIsSaving(false);
     }
@@ -116,11 +116,11 @@ export default function ManageUsersPage() {
   const handleDelete = async (id) => {
     try {
       await api.delete(`/users/${id}`);
-      toast.success('Pengguna berhasil dihapus');
+      toast.success(t('manageUsers.deleteSuccess', 'User deleted successfully'));
       fetchUsers();
     } catch (error) {
       console.error('Error deleting user:', error);
-      toast.error(error.response?.message || 'Gagal menghapus pengguna. Pastikan Anda memiliki hak akses Admin.');
+      toast.error(error.response?.message || t('manageUsers.deleteFailed', 'Failed to delete user'));
     }
   };
 
@@ -158,34 +158,32 @@ export default function ManageUsersPage() {
         <div className="flex items-center gap-3">
           <Select value={roleFilter} onValueChange={setRoleFilter}>
             <SelectTrigger className="w-[180px] bg-background">
-              <SelectValue placeholder="Filter Role" />
+              <SelectValue placeholder={t('manageUsers.roleFilter', 'Role Filter')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="Semua">Semua Role</SelectItem>
+              <SelectItem value="Semua">{t('manageUsers.allRoles', 'All Roles')}</SelectItem>
               <SelectItem value="Admin">Admin</SelectItem>
               <SelectItem value="Teknisi">Teknisi</SelectItem>
               <SelectItem value="User">User</SelectItem>
             </SelectContent>
           </Select>
           <Button onClick={() => setModalState({ isOpen: true, user: null })} className="gap-2 shrink-0">
-            <PlusCircle className="h-4 w-4" /> Tambah Pengguna
+            <PlusCircle className="h-4 w-4" /> {t('manageUsers.addUser', 'Add User')}
           </Button>
         </div>
       </div>
 
-      <Card className="border-border shadow-sm overflow-hidden">
-        <CardContent className="p-0">
-          <div className="overflow-x-auto rounded-lg border border-border">
+      <div className="overflow-x-auto rounded-lg border border-border">
             <Table className="min-w-full">
               <TableHeader className="bg-muted/30">
                 <TableRow>
-                  <TableHead className="px-6">Nama & Email</TableHead>
-                  <TableHead>No. HP</TableHead>
-                  <TableHead>Divisi</TableHead>
+                  <TableHead className="px-6">{t('manageUsers.nameEmail', 'Name & Email')}</TableHead>
+                  <TableHead>{t('manageUsers.phone', 'Phone')}</TableHead>
+                  <TableHead>{t('common.division', 'Division')}</TableHead>
                   <TableHead>Role</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Tanggal Daftar</TableHead>
-                  <TableHead className="text-right px-6">Aksi</TableHead>
+                  <TableHead>{t('common.status', 'Status')}</TableHead>
+                  <TableHead>{t('manageUsers.registerDate', 'Register Date')}</TableHead>
+                  <TableHead className="text-right px-6">{t('common.actions', 'Actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -215,7 +213,7 @@ export default function ManageUsersPage() {
                       <TableCell>{getRoleBadge(u.role)}</TableCell>
                       <TableCell>
                         <Badge variant="secondary" className={u.is_active ? 'bg-green-500/10 text-green-600' : 'bg-muted text-muted-foreground'}>
-                          {u.is_active ? 'Aktif' : 'Nonaktif'}
+                          {u.is_active ? t('manageUsers.active', 'Active') : t('manageUsers.inactive', 'Inactive')}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground whitespace-nowrap">{safeFormatDate(u.created_at || u.created)}</TableCell>
@@ -224,7 +222,7 @@ export default function ManageUsersPage() {
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-8 w-8">
                               <MoreHorizontal className="h-4 w-4" />
-                              <span className="sr-only">Buka menu</span>
+                              <span className="sr-only">{t('common.openMenu', 'Open menu')}</span>
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
@@ -256,7 +254,7 @@ export default function ManageUsersPage() {
                     <TableCell colSpan={7} className="h-48 text-center">
                       <Empty
                         variant={EMPTY_STATE_VARIANTS.NO_RESULTS}
-                        title="Tidak ada pengguna"
+                        title={t('manageUsers.emptyTitle', 'No users')}
                         description="Belum ada pengguna yang sesuai dengan filter saat ini."
                       />
                     </TableCell>
@@ -265,8 +263,6 @@ export default function ManageUsersPage() {
               </TableBody>
             </Table>
           </div>
-        </CardContent>
-      </Card>
 
       <UserEditModal 
         isOpen={modalState.isOpen} 

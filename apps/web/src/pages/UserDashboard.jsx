@@ -210,7 +210,7 @@ export default function UserDashboard() {
           </Link>
         </CardHeader>
         <CardContent>
-          <div className="rounded-xl border border-border overflow-x-auto">
+          <div className="overflow-x-auto">
             <Table className="min-w-full">
               <TableHeader className="bg-muted/50">
                 <TableRow>

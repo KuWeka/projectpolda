@@ -13,7 +13,7 @@ const { invalidateAllDashboardCaches } = require('../utils/dashboardCache');
 
 // Get all tickets
 router.get('/', auth, validateQuery(ticketSchemas.list), asyncHandler(async (req, res) => {
-  const { status, urgency, user_id, assigned_technician_id, unassigned, search, page, perPage, sort, order } = req.query;
+  const { status, urgency, user_id, assigned_technician_id, unassigned, from, to, search, page, perPage, sort, order } = req.query;
 
   // Role-based filtering
   let effectiveUserId = user_id;
@@ -39,6 +39,8 @@ router.get('/', auth, validateQuery(ticketSchemas.list), asyncHandler(async (req
       urgency,
       user_id: effectiveUserId,
       assigned_technician_id: effectiveAssignedTechnicianId,
+      from,
+      to,
       search,
       sort,
       order
@@ -213,6 +215,7 @@ router.post('/', auth, validate(ticketSchemas.create), asyncHandler(async (req, 
     [id, ticket_number, title, description, location || '', urgency || 'Sedang', category, 'Pending', req.user.id, now, now]
   );
 
+  await TicketService.invalidateTicketCaches(id);
   await invalidateAllDashboardCaches();
 
   const io = req.app.get('io');
@@ -261,6 +264,7 @@ router.patch('/:id', auth, asyncHandler(async (req, res) => {
   queryArgs.push(req.params.id);
   await pool.query(`UPDATE tickets SET ${querySets.join(', ')} WHERE id = ?`, queryArgs);
 
+  await TicketService.invalidateTicketCaches(req.params.id);
   await invalidateAllDashboardCaches();
 
   // Emit update event
@@ -279,6 +283,7 @@ router.patch('/:id', auth, asyncHandler(async (req, res) => {
 // Delete ticket
 router.delete('/:id', auth, role('Admin'), asyncHandler(async (req, res) => {
   await pool.query('DELETE FROM tickets WHERE id = ?', [req.params.id]);
+  await TicketService.invalidateTicketCaches(req.params.id);
   await invalidateAllDashboardCaches();
   res.json({ message: 'Deleted' });
 }));

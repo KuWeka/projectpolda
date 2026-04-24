@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import api from '@/lib/api.js';
 import { Card, CardContent } from '@/components/ui/card.jsx';
@@ -31,6 +32,7 @@ const safeFormatDate = (value, pattern = 'dd MMM yyyy') => {
 };
 
 export default function UserTicketsPage() {
+  const { t } = useTranslation();
   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const [tickets, setTickets] = useState([]);
@@ -127,30 +129,30 @@ export default function UserTicketsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center text-sm text-muted-foreground mb-1">
-            <Link to="/user/dashboard" className="hover:text-primary transition-colors">Dashboard</Link>
+            <Link to="/user/dashboard" className="hover:text-primary transition-colors">{t('nav.item.Dashboard', 'Dashboard')}</Link>
             <ChevronRight className="h-3 w-3 mx-1" />
-            <span className="text-foreground font-medium">Tiket Saya</span>
+            <span className="text-foreground font-medium">{t('nav.item.Tiket Saya', 'My Tickets')}</span>
           </div>
           <SectionHeader
-            title="Tiket Saya"
-            subtitle="Pantau status dan riwayat semua tiket yang Anda laporkan."
+            title={t('nav.item.Tiket Saya', 'My Tickets')}
+            subtitle={t('userTickets.subtitle', 'Monitor the status and history of all tickets you reported.')}
           />
         </div>
         <Button asChild className="shrink-0 gap-2 shadow-md shadow-primary/20">
           <Link to="/user/create-ticket">
             <PlusCircle className="h-4 w-4" />
-            Buat Tiket Baru
+            {t('userTickets.createNew', 'Create New Ticket')}
           </Link>
         </Button>
       </div>
 
-      <Card className="overflow-hidden border-border bg-card/95 shadow-sm">
-        <div className="flex flex-col gap-4 border-b bg-card/70 p-4">
+      <div className="space-y-4">
+        <div className="flex flex-col gap-4">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input 
-                placeholder="Cari ID tiket atau judul..." 
+                placeholder={t('userTickets.searchPlaceholder', 'Search ticket ID or title...')} 
                 className="pl-9 bg-background"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -159,10 +161,10 @@ export default function UserTicketsPage() {
             <div className="flex flex-wrap sm:flex-nowrap items-center gap-3">
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-[140px] bg-background">
-                  <SelectValue placeholder="Status" />
+                  <SelectValue placeholder={t('common.status', 'Status')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Semua Status</SelectItem>
+                  <SelectItem value="all">{t('userTickets.allStatus', 'All Status')}</SelectItem>
                   <SelectItem value="Pending">Pending</SelectItem>
                   <SelectItem value="Proses">Proses</SelectItem>
                   <SelectItem value="Selesai">Selesai</SelectItem>
@@ -173,13 +175,13 @@ export default function UserTicketsPage() {
 
               <Select value={sortOrder} onValueChange={setSortOrder}>
                 <SelectTrigger className="w-[160px] bg-background">
-                  <SelectValue placeholder="Urutkan" />
+                  <SelectValue placeholder={t('common.sort', 'Sort')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="urgency_desc">Darurat → Rendah</SelectItem>
-                  <SelectItem value="newest">Terbaru</SelectItem>
-                  <SelectItem value="oldest">Tertua</SelectItem>
-                  <SelectItem value="completed_first">Selesai Dulu</SelectItem>
+                  <SelectItem value="urgency_desc">{t('userTickets.sortUrgencyDesc', 'Critical -> Low')}</SelectItem>
+                  <SelectItem value="newest">{t('common.newest', 'Newest')}</SelectItem>
+                  <SelectItem value="oldest">{t('common.oldest', 'Oldest')}</SelectItem>
+                  <SelectItem value="completed_first">{t('userTickets.completedFirst', 'Completed First')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -187,7 +189,7 @@ export default function UserTicketsPage() {
           
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-2 text-sm">
-              <span className="text-muted-foreground">Dari:</span>
+              <span className="text-muted-foreground">{t('common.from', 'From')}:</span>
               <Input 
                 type="date" 
                 value={dateFrom} 
@@ -196,7 +198,7 @@ export default function UserTicketsPage() {
               />
             </div>
             <div className="flex items-center gap-2 text-sm">
-              <span className="text-muted-foreground">Sampai:</span>
+              <span className="text-muted-foreground">{t('common.to', 'To')}:</span>
               <Input 
                 type="date" 
                 value={dateTo} 
@@ -206,23 +208,22 @@ export default function UserTicketsPage() {
             </div>
             <Button variant="ghost" size="sm" onClick={resetFilters} className="text-muted-foreground hover:text-foreground">
               <RefreshCcw className="h-4 w-4 mr-2" />
-              Reset Filter
+              {t('common.resetFilter', 'Reset Filter')}
             </Button>
           </div>
         </div>
 
-        <CardContent className="p-0">
-          <div className="overflow-x-auto rounded-lg border border-border">
+        <div className="overflow-x-auto rounded-lg border border-border">
             <Table className="min-w-full">
               <TableHeader className="bg-muted/40">
                 <TableRow>
-                  <TableHead className="w-[130px] px-6">ID Tiket</TableHead>
-                  <TableHead>Judul</TableHead>
-                  <TableHead>Urgensi</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Teknisi</TableHead>
-                  <TableHead>Tanggal</TableHead>
-                  <TableHead className="text-right px-6">Aksi</TableHead>
+                  <TableHead className="w-[130px] px-6">{t('common.ticketId', 'Ticket ID')}</TableHead>
+                  <TableHead>{t('common.title', 'Title')}</TableHead>
+                  <TableHead>{t('common.urgency', 'Urgency')}</TableHead>
+                  <TableHead>{t('common.status', 'Status')}</TableHead>
+                  <TableHead>{t('roles.technician', 'Technician')}</TableHead>
+                  <TableHead>{t('common.date', 'Date')}</TableHead>
+                  <TableHead className="text-right px-6">{t('common.actions', 'Actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -251,7 +252,7 @@ export default function UserTicketsPage() {
                       </TableCell>
                       <TableCell className="text-sm">
                         {ticket.technician_name || (
-                          <span className="text-muted-foreground italic">Belum ditugaskan</span>
+                          <span className="text-muted-foreground italic">{t('userTickets.unassigned', 'Not assigned')}</span>
                         )}
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground whitespace-nowrap">
@@ -265,7 +266,7 @@ export default function UserTicketsPage() {
                             </Button>
                           )}
                           <Button variant="secondary" size="sm" asChild className="h-8">
-                            <Link to={`/user/tickets/${ticket.id}`}>Detail</Link>
+                            <Link to={`/user/tickets/${ticket.id}`}>{t('common.detail', 'Detail')}</Link>
                           </Button>
                         </div>
                       </TableCell>
@@ -276,8 +277,8 @@ export default function UserTicketsPage() {
                     <TableCell colSpan={7} className="h-48 text-center">
                       <Empty
                         variant={EMPTY_STATE_VARIANTS.NO_RESULTS}
-                        title="Tidak ada tiket ditemukan"
-                        description="Coba sesuaikan filter pencarian Anda."
+                        title={t('userTickets.emptyTitle', 'No tickets found')}
+                        description={t('userTickets.emptyDesc', 'Try adjusting your search filters.')}
                       />
                     </TableCell>
                   </TableRow>
@@ -287,10 +288,10 @@ export default function UserTicketsPage() {
           </div>
 
           {!isLoading && tickets.length > 0 && (
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 border-t bg-muted/30">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 border-t">
               <div className="text-sm text-muted-foreground">
-                Menampilkan {Math.max(1, (pagination.page - 1) * pagination.perPage + 1)}-
-                {Math.min(pagination.page * pagination.perPage, pagination.total)} dari {pagination.total} tiket
+                {t('userTickets.showing', 'Showing')} {Math.max(1, (pagination.page - 1) * pagination.perPage + 1)}-
+                {Math.min(pagination.page * pagination.perPage, pagination.total)} {t('userTickets.of', 'of')} {pagination.total} {t('userTickets.tickets', 'tickets')}
               </div>
 
               <div className="flex items-center gap-2">
@@ -331,8 +332,7 @@ export default function UserTicketsPage() {
               </div>
             </div>
           )}
-        </CardContent>
-      </Card>
+      </div>
     </div>
   );
 }

@@ -65,7 +65,7 @@ export default function ManageTechniciansPage() {
       const { data } = await api.get('/technicians');
       setTechnicians(extractTechnicians(data));
     } catch (err) {
-      toast.error('Gagal memuat data teknisi');
+      toast.error(t('manageTechs.loadFailed', 'Failed to load technicians'));
     } finally {
       setIsLoading(false);
     }
@@ -104,7 +104,7 @@ export default function ManageTechniciansPage() {
         await api.patch(`/technicians/${modalState.tech.id}`, {
           name: data.name, email: data.email, phone: data.phone, is_active: data.is_active, role: ROLES.TECHNICIAN
         });
-        toast.success('Teknisi diperbarui');
+        toast.success(t('manageTechs.updateSuccess', 'Technician updated'));
       } else {
         await api.post('/technicians/promote', {
           user_id: data.user_id,
@@ -115,12 +115,12 @@ export default function ManageTechniciansPage() {
           max_active_tickets: Number(data.max_active_tickets || 5),
           wa_notification: false,
         });
-        toast.success('User berhasil dipromosikan menjadi Teknisi');
+        toast.success(t('manageTechs.promoteSuccess', 'User promoted to technician'));
       }
       setModalState({ isOpen: false, tech: null });
       fetchTechnicians();
     } catch (error) {
-      toast.error(error.response?.message || 'Gagal menyimpan teknisi. Periksa data kembali.');
+      toast.error(error.response?.message || t('manageTechs.saveFailed', 'Failed to save technician'));
     } finally {
       setIsSaving(false);
     }
@@ -130,20 +130,20 @@ export default function ManageTechniciansPage() {
     try {
       await api.patch(`/technicians/${tech.id}/downgrade`);
       
-      toast.success('Role teknisi berhasil diturunkan menjadi User');
+      toast.success(t('manageTechs.downgradeSuccess', 'Technician role downgraded to user'));
       fetchTechnicians();
     } catch (err) {
-      toast.error('Gagal menurunkan role teknisi');
+      toast.error(t('manageTechs.downgradeFailed', 'Failed to downgrade technician role'));
     }
   };
 
   const handlePermanentDelete = async (tech) => {
     try {
       await api.delete(`/users/${tech.id}`);
-      toast.success('Akun teknisi berhasil dihapus permanen');
+      toast.success(t('manageTechs.deleteSuccess', 'Technician account deleted permanently'));
       fetchTechnicians();
     } catch (err) {
-      toast.error('Gagal menghapus akun teknisi');
+      toast.error(t('manageTechs.deleteFailed', 'Failed to delete technician account'));
     }
   };
 
@@ -157,21 +157,19 @@ export default function ManageTechniciansPage() {
           />
         </div>
         <Button onClick={() => setModalState({ isOpen: true, tech: null })} className="gap-2 shrink-0">
-          <PlusCircle className="h-4 w-4" /> Tambah Teknisi
+          <PlusCircle className="h-4 w-4" /> {t('manageTechs.addTechnician', 'Add Technician')}
         </Button>
       </div>
 
-      <Card className="border-border shadow-sm overflow-hidden">
-        <CardContent className="p-0">
-          <div className="overflow-x-auto rounded-lg border border-border">
+      <div className="overflow-x-auto rounded-lg border border-border">
             <Table className="min-w-full">
               <TableHeader className="bg-muted/30">
                 <TableRow>
-                  <TableHead className="px-6">Nama & Info</TableHead>
-                  <TableHead>Divisi</TableHead>
-                  <TableHead>Kontak</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right px-6">Aksi</TableHead>
+                  <TableHead className="px-6">{t('manageTechs.nameInfo', 'Name & Info')}</TableHead>
+                  <TableHead>{t('common.division', 'Division')}</TableHead>
+                  <TableHead>{t('manageTechs.contact', 'Contact')}</TableHead>
+                  <TableHead>{t('common.status', 'Status')}</TableHead>
+                  <TableHead className="text-right px-6">{t('common.actions', 'Actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -186,21 +184,21 @@ export default function ManageTechniciansPage() {
                     </TableRow>
                   ))
                 ) : technicians.length > 0 ? (
-                  technicians.map((t) => (
-                    <TableRow key={t.id} className="hover:bg-muted/30">
+                  technicians.map((tech) => (
+                    <TableRow key={tech.id} className="hover:bg-muted/30">
                       <TableCell className="px-6 py-3">
-                        <div className="font-medium text-foreground">{t.name}</div>
-                        <div className="text-sm text-muted-foreground">{t.email}</div>
+                        <div className="font-medium text-foreground">{tech.name}</div>
+                        <div className="text-sm text-muted-foreground">{tech.email}</div>
                       </TableCell>
                       <TableCell className="text-sm">
-                        {t.division_name || '-'}
+                        {tech.division_name || '-'}
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">
-                        {t.phone || '-'}
+                        {tech.phone || '-'}
                       </TableCell>
                       <TableCell>
-                        <Badge variant="secondary" className={t.is_active ? 'bg-green-500/10 text-green-600' : 'bg-muted text-muted-foreground'}>
-                          {t.is_active ? 'Aktif' : 'Tidak Bertugas'}
+                        <Badge variant="secondary" className={tech.is_active ? 'bg-green-500/10 text-green-600' : 'bg-muted text-muted-foreground'}>
+                          {tech.is_active ? t('manageTechs.active', 'Active') : t('manageTechs.offDuty', 'Off Duty')}
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right px-6">
@@ -208,22 +206,22 @@ export default function ManageTechniciansPage() {
                           <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon" className="h-8 w-8">
                               <MoreHorizontal className="h-4 w-4" />
-                              <span className="sr-only">Buka menu</span>
+                              <span className="sr-only">{t('common.openMenu', 'Open menu')}</span>
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => setModalState({ isOpen: true, tech: t })}>
+                            <DropdownMenuItem onClick={() => setModalState({ isOpen: true, tech })}>
                               <Edit className="mr-2 h-4 w-4" />
                               Edit
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => setActionTarget({ type: 'downgrade', tech: t })}>
+                            <DropdownMenuItem onClick={() => setActionTarget({ type: 'downgrade', tech })}>
                               <ArrowDown className="mr-2 h-4 w-4" />
                               Turunkan ke User
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
                               className="text-destructive focus:text-destructive"
-                              onClick={() => setActionTarget({ type: 'delete', tech: t })}
+                              onClick={() => setActionTarget({ type: 'delete', tech })}
                             >
                               <Trash2 className="mr-2 h-4 w-4" />
                               Hapus Permanen
@@ -239,8 +237,8 @@ export default function ManageTechniciansPage() {
                       <Empty
                         className="border-0 shadow-none"
                         variant={EMPTY_STATE_VARIANTS.NO_RESULTS}
-                        title="Tidak ada data teknisi"
-                        description="Belum ada teknisi terdaftar untuk ditampilkan."
+                        title={t('manageTechs.emptyTitle', 'No technician data')}
+                        description={t('manageTechs.emptyDesc', 'No registered technicians to display yet.')}
                       />
                     </TableCell>
                   </TableRow>
@@ -248,8 +246,6 @@ export default function ManageTechniciansPage() {
               </TableBody>
             </Table>
           </div>
-        </CardContent>
-      </Card>
 
       <AddEditTechnicianModal 
         isOpen={modalState.isOpen} 

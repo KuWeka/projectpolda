@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import api from '@/lib/api.js';
 import { Card, CardContent } from '@/components/ui/card.jsx';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.jsx';
@@ -43,6 +44,7 @@ const safeFormatDate = (value, pattern = 'dd MMM HH:mm') => {
 };
 
 export default function ChatMonitoringPage() {
+  const { t } = useTranslation();
   const [chats, setChats] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -85,7 +87,7 @@ export default function ChatMonitoringPage() {
       // For transient auth/network issues, keep UI usable and avoid noisy persistent toast.
       setChats([]);
       if (status && status >= 500) {
-        toast.error(`Gagal memuat data chat${message ? `: ${message}` : ''}`);
+        toast.error(`${t('chatMonitoring.loadFailed', 'Failed to load chat data')}${message ? `: ${message}` : ''}`);
       }
     } finally {
       setIsLoading(false);
@@ -107,7 +109,7 @@ export default function ChatMonitoringPage() {
       setMessages(extractItems(data));
     } catch (e) {
       console.error(e);
-      toast.error('Gagal memuat pesan');
+      toast.error(t('chatMonitoring.loadMessagesFailed', 'Failed to load messages'));
     }
   };
 
@@ -127,7 +129,7 @@ export default function ChatMonitoringPage() {
 
       await api.delete(`/chats/${chatId}`);
       
-      toast.success('Chat berhasil dihapus');
+      toast.success(t('chatMonitoring.deleteSuccess', 'Chat deleted successfully'));
       if (selectedChat && selectedChat.id === chatId) {
         setSelectedChat(null);
       }
@@ -135,7 +137,7 @@ export default function ChatMonitoringPage() {
       fetchChats();
     } catch (error) {
       console.error('Error deleting chat:', error);
-      toast.error(error.response?.message || 'Gagal menghapus chat. Pastikan Anda memiliki hak akses Admin.');
+      toast.error(error.response?.message || t('chatMonitoring.deleteFailed', 'Failed to delete chat'));
     } finally {
       setIsDeleting(false);
     }
@@ -157,13 +159,13 @@ export default function ChatMonitoringPage() {
         <AlertDialog open={!!deleteTargetId} onOpenChange={(open) => !open && setDeleteTargetId(null)}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>Hapus Chat</AlertDialogTitle>
+              <AlertDialogTitle>{t('chatMonitoring.deleteTitle', 'Delete Chat')}</AlertDialogTitle>
               <AlertDialogDescription>
-                Hapus chat ini? Semua pesan di dalamnya akan ikut terhapus. Tindakan ini tidak dapat dibatalkan.
+                {t('chatMonitoring.deleteDesc', 'Delete this chat? All messages inside will also be deleted. This action cannot be undone.')}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel onClick={() => setDeleteTargetId(null)}>Batal</AlertDialogCancel>
+              <AlertDialogCancel onClick={() => setDeleteTargetId(null)}>{t('buttons.cancel', 'Cancel')}</AlertDialogCancel>
               <AlertDialogAction
                 className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                 onClick={() => {
@@ -173,7 +175,7 @@ export default function ChatMonitoringPage() {
                 }}
                 disabled={isDeleting}
               >
-                {isDeleting ? 'Menghapus...' : 'Hapus'}
+                {isDeleting ? t('chatMonitoring.deleting', 'Deleting...') : t('chatMonitoring.delete', 'Delete')}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
@@ -185,34 +187,33 @@ export default function ChatMonitoringPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500 h-full flex flex-col">
       <SectionHeader
-        title="Monitoring Chat"
-        subtitle="Pantau percakapan antara Pelapor dan Teknisi."
+        title={t('nav.item.Monitoring Chat', 'Chat Monitoring')}
+        subtitle={t('chatMonitoring.subtitle', 'Monitor conversations between reporters and technicians.')}
       />
 
-      <Card className="border-border shadow-sm overflow-hidden flex-1 flex flex-col">
-        <div className="p-4 bg-muted/50 border-b flex flex-wrap gap-4 shrink-0">
+      <div className="space-y-4 flex-1 flex flex-col">
+        <div className="flex flex-wrap gap-4 shrink-0">
           <div className="relative w-full sm:w-[250px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Cari nama atau tiket..." className="pl-9 bg-background" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+            <Input placeholder={t('chatMonitoring.searchPlaceholder', 'Search name or ticket...')} className="pl-9 bg-background" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
           </div>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-[140px] bg-background"><SelectValue /></SelectTrigger>
-            <SelectContent><SelectItem value="all">Semua Status</SelectItem><SelectItem value="Open">Open</SelectItem><SelectItem value="Closed">Closed</SelectItem></SelectContent>
+            <SelectContent><SelectItem value="all">{t('userTickets.allStatus', 'All Status')}</SelectItem><SelectItem value="Open">Open</SelectItem><SelectItem value="Closed">Closed</SelectItem></SelectContent>
           </Select>
-          <Button variant="ghost" onClick={() => {setSearchTerm(''); setStatusFilter('all');}}><RefreshCcw className="h-4 w-4 mr-2" /> Reset</Button>
+          <Button variant="ghost" onClick={() => {setSearchTerm(''); setStatusFilter('all');}}><RefreshCcw className="h-4 w-4 mr-2" /> {t('common.reset', 'Reset')}</Button>
         </div>
         
-        <CardContent className="p-0 flex-1 overflow-auto">
-          <div className="overflow-x-auto rounded-lg border border-border">
+        <div className="flex-1 overflow-auto overflow-x-auto rounded-lg border border-border">
           <Table className="min-w-full">
             <TableHeader className="bg-muted/30 sticky top-0 z-10">
               <TableRow>
-                <TableHead className="px-6">Pelapor</TableHead>
-                <TableHead>Teknisi</TableHead>
-                <TableHead>ID Tiket</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Pesan Terakhir</TableHead>
-                <TableHead className="text-right px-6">Aksi</TableHead>
+                <TableHead className="px-6">{t('tickets.reporter', 'Reporter')}</TableHead>
+                <TableHead>{t('roles.technician', 'Technician')}</TableHead>
+                <TableHead>{t('common.ticketId', 'Ticket ID')}</TableHead>
+                <TableHead>{t('common.status', 'Status')}</TableHead>
+                <TableHead>{t('chatMonitoring.lastMessage', 'Last Message')}</TableHead>
+                <TableHead className="text-right px-6">{t('common.actions', 'Actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -230,15 +231,15 @@ export default function ChatMonitoringPage() {
               ) : chats.length > 0 ? (
                 chats.map((c) => (
                   <TableRow key={c.id} className="hover:bg-muted/30">
-                    <TableCell className="px-6 font-medium">{c.user_name || 'Pengguna Tidak Diketahui'}</TableCell>
-                    <TableCell className="text-muted-foreground">{c.tech_name || 'Belum ada'}</TableCell>
+                    <TableCell className="px-6 font-medium">{c.user_name || t('tickets.unknown_user', 'User not found')}</TableCell>
+                    <TableCell className="text-muted-foreground">{c.tech_name || t('userTickets.unassigned', 'Not assigned')}</TableCell>
                     <TableCell className="font-mono text-sm">{c.ticket_number || '-'}</TableCell>
                     <TableCell><Badge variant={c.status === 'Open' ? 'default' : 'secondary'}>{c.status}</Badge></TableCell>
                     <TableCell className="text-sm text-muted-foreground">{safeFormatDate(c.updated_at || c.updated)}</TableCell>
                     <TableCell className="text-right px-6">
                       <div className="flex items-center justify-end gap-2">
                         <Button variant="secondary" size="sm" onClick={() => handleSelectChat(c)}>
-                          <Eye className="h-4 w-4 mr-1" /> Lihat
+                          <Eye className="h-4 w-4 mr-1" /> {t('common.viewDetail', 'View Detail')}
                         </Button>
                         <Button variant="destructive" size="icon" className="h-8 w-8" onClick={() => setDeleteTargetId(c.id)} disabled={isDeleting}>
                           {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
@@ -253,8 +254,8 @@ export default function ChatMonitoringPage() {
                     <Empty
                       className="border-0 shadow-none"
                       variant={EMPTY_STATE_VARIANTS.NO_RESULTS}
-                      title="Tidak ada chat"
-                      description="Belum ada percakapan yang cocok dengan filter saat ini."
+                      title={t('chatMonitoring.emptyTitle', 'No chat data')}
+                      description={t('chatMonitoring.emptyDesc', 'No conversations match current filters.')}
                     />
                   </TableCell>
                 </TableRow>
@@ -262,20 +263,19 @@ export default function ChatMonitoringPage() {
             </TableBody>
           </Table>
           </div>
-        </CardContent>
-      </Card>
+      </div>
 
       <AlertDialog open={!!deleteTargetId} onOpenChange={(open) => !open && setDeleteTargetId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Hapus Chat</AlertDialogTitle>
+            <AlertDialogTitle>{t('chatMonitoring.deleteTitle', 'Delete Chat')}</AlertDialogTitle>
             <AlertDialogDescription>
               Hapus chat {deleteTarget?.ticket_number ? `untuk tiket "${deleteTarget.ticket_number}"` : 'ini'}?
               Semua pesan di dalamnya akan ikut terhapus dan tindakan ini tidak dapat dibatalkan.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setDeleteTargetId(null)}>Batal</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => setDeleteTargetId(null)}>{t('buttons.cancel', 'Cancel')}</AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={() => {
@@ -285,7 +285,7 @@ export default function ChatMonitoringPage() {
               }}
               disabled={isDeleting}
             >
-              {isDeleting ? 'Menghapus...' : 'Hapus'}
+              {isDeleting ? t('chatMonitoring.deleting', 'Deleting...') : t('chatMonitoring.delete', 'Delete')}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

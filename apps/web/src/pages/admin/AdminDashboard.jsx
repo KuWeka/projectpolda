@@ -19,7 +19,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, LineChart, Line, Tooltip, R
 
 const chartConfig = {
   total: {
-    label: 'Jumlah Tiket',
+    label: 'Total Tickets',
     color: 'hsl(var(--primary))',
   },
 };
@@ -133,7 +133,7 @@ export default function AdminDashboard() {
         <CardTitle className="text-base font-semibold">{title}</CardTitle>
       </CardHeader>
       <CardContent className="p-0">
-        <div className={`${items.length > 0 ? 'max-h-[280px] overflow-y-auto' : ''} overflow-x-auto rounded-lg border border-border`}>
+        <div className={`${items.length > 0 ? 'max-h-[280px] overflow-y-auto' : ''} overflow-x-auto`}>
           <Table className="min-w-full">
           <TableHeader className="bg-muted/30">
             <TableRow>
@@ -141,8 +141,8 @@ export default function AdminDashboard() {
               <TableHead>Urgensi</TableHead>
               <TableHead>{t('tickets.reporter', 'Pelapor')}</TableHead>
               {isProsesOrSelesai && <TableHead>{t('roles.technician', 'Teknisi')}</TableHead>}
-              <TableHead>Tanggal</TableHead>
-              <TableHead className="text-right px-4">Aksi</TableHead>
+              <TableHead>{t('common.date', 'Date')}</TableHead>
+              <TableHead className="text-right px-4">{t('common.actions', 'Actions')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -174,7 +174,7 @@ export default function AdminDashboard() {
                   </TableCell>
                   <TableCell className="text-right px-4">
                     <Button variant="secondary" size="sm" asChild>
-                      <Link to={`/admin/tickets/${tk.id}`}>Detail</Link>
+                      <Link to={`/admin/tickets/${tk.id}`}>{t('common.detail', 'Detail')}</Link>
                     </Button>
                   </TableCell>
                 </TableRow>
@@ -185,7 +185,7 @@ export default function AdminDashboard() {
                   <Empty
                     variant={EMPTY_STATE_VARIANTS.NO_RESULTS}
                     title={t('tickets.no_tickets', 'Tidak ada tiket')}
-                    description="Belum ada data untuk ditampilkan pada bagian ini."
+                    description={t('adminDashboard.noDataSection', 'No data to display in this section.')}
                   />
                 </TableCell>
               </TableRow>
@@ -222,12 +222,12 @@ export default function AdminDashboard() {
       ) : (
         <div className="grid gap-4 grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
           {[
-            { title: 'Total Tiket', value: stats.total, icon: Ticket, note: 'Semua tiket terdaftar' },
-            { title: t('status.pending', 'Pending'), value: stats.pending, icon: Clock, note: 'Menunggu penanganan' },
-            { title: t('status.proses', 'Proses'), value: stats.proses, icon: PlayCircle, note: 'Sedang dikerjakan' },
-            { title: t('status.selesai', 'Selesai'), value: stats.selesai, icon: CheckCircle2, note: 'Telah diselesaikan' },
-            { title: t('admin.active_techs', 'Teknisi Aktif'), value: stats.activeTechs, icon: Users, note: 'Teknisi sedang bertugas' },
-            { title: 'Pengguna', value: stats.totalUsers, icon: Users, note: 'Total user terdaftar' }
+            { title: t('adminDashboard.totalTickets', 'Total Tickets'), value: stats.total, icon: Ticket, note: t('adminDashboard.totalTicketsNote', 'All tickets registered') },
+            { title: t('status.pending', 'Pending'), value: stats.pending, icon: Clock, note: t('adminDashboard.pendingNote', 'Waiting for handling') },
+            { title: t('status.proses', 'In Progress'), value: stats.proses, icon: PlayCircle, note: t('adminDashboard.inProgressNote', 'Currently being worked on') },
+            { title: t('status.selesai', 'Completed'), value: stats.selesai, icon: CheckCircle2, note: t('adminDashboard.completedNote', 'Completed successfully') },
+            { title: t('admin.active_techs', 'Active Technicians'), value: stats.activeTechs, icon: Users, note: t('adminDashboard.activeTechsNote', 'Technicians on duty') },
+            { title: t('adminDashboard.users', 'Users'), value: stats.totalUsers, icon: Users, note: t('adminDashboard.usersNote', 'Total registered users') }
           ].map((item) => (
             <Card key={item.title} className="border-border shadow-sm">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -245,7 +245,7 @@ export default function AdminDashboard() {
 
       {/* Insight Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mt-4">
-        <InsightCard title="Tren Tiket Bulan Ini" icon={TrendingUp} isLoading={isLoading}>
+        <InsightCard title={t('adminDashboard.insights.trendTitle', 'Ticket Trend This Month')} icon={TrendingUp} isLoading={isLoading}>
           {ticketTrendData.length > 0 ? (
             <ResponsiveContainer width="100%" height={200}>
               <LineChart data={ticketTrendData}>
@@ -259,39 +259,39 @@ export default function AdminDashboard() {
           ) : (
             <Empty
               variant={EMPTY_STATE_VARIANTS.NO_RESULTS}
-              title="Data tren belum tersedia"
-              description="Belum ada data trend untuk ditampilkan"
+              title={t('adminDashboard.insights.noTrendTitle', 'Trend data is not available yet')}
+              description={t('adminDashboard.insights.noTrendDesc', 'No trend data to display')}
             />
           )}
         </InsightCard>
 
-        <InsightCard title="SLA Penyelesaian" icon={ShieldCheck} isLoading={isLoading}>
+        <InsightCard title={t('adminDashboard.insights.slaTitle', 'SLA Completion')} icon={ShieldCheck} isLoading={isLoading}>
           <div className="flex items-center gap-4">
             <div className="text-3xl font-bold text-primary">{slaCompliance}%</div>
-            <div className="text-sm text-muted-foreground">tiket berhasil diselesaikan dari total tiket</div>
+            <div className="text-sm text-muted-foreground">{t('adminDashboard.insights.slaDesc', 'tickets completed out of total tickets')}</div>
           </div>
         </InsightCard>
 
-        <InsightCard title="Aging Tiket" icon={Timer} isLoading={isLoading}>
+        <InsightCard title={t('adminDashboard.insights.agingTitle', 'Ticket Aging')} icon={Timer} isLoading={isLoading}>
           <div className="space-y-2">
             <div className="text-2xl font-bold text-amber-600">{agingTickets}</div>
-            <p className="text-sm text-muted-foreground">Tiket lebih dari 3 hari belum selesai</p>
+            <p className="text-sm text-muted-foreground">{t('adminDashboard.insights.agingDesc', 'Tickets older than 3 days are still unresolved')}</p>
           </div>
         </InsightCard>
 
-        <InsightCard title="Prioritas Hari Ini" icon={Flame} isLoading={isLoading}>
+        <InsightCard title={t('adminDashboard.insights.priorityTitle', 'Today Priority')} icon={Flame} isLoading={isLoading}>
           <div className="space-y-2">
             <div className="text-2xl font-bold text-red-600">{urgentTickets}</div>
-            <p className="text-sm text-muted-foreground">Tiket prioritas tinggi yang perlu aksi cepat</p>
+            <p className="text-sm text-muted-foreground">{t('adminDashboard.insights.priorityDesc', 'High-priority tickets that need quick action')}</p>
           </div>
         </InsightCard>
       </div>
 
       <div className="grid lg:grid-cols-4 gap-6">
         <div className="lg:col-span-3 space-y-6">
-          {renderTableCard(`Tiket ${t('status.pending', 'Pending')} Terbaru`, tables.pending, false)}
-          {renderTableCard(`Tiket Sedang ${t('status.proses', 'Proses')}`, tables.proses, true)}
-          {renderTableCard(`Tiket Baru ${t('status.selesai', 'Selesai')}`, tables.selesai, true)}
+          {renderTableCard(t('adminDashboard.tables.pendingLatest', 'Latest Pending Tickets'), tables.pending, false)}
+          {renderTableCard(t('adminDashboard.tables.inProgress', 'In Progress Tickets'), tables.proses, true)}
+          {renderTableCard(t('adminDashboard.tables.completedLatest', 'Latest Completed Tickets'), tables.selesai, true)}
         </div>
         
         <div className="space-y-6">
@@ -300,9 +300,9 @@ export default function AdminDashboard() {
             <CardHeader>
               <CardTitle className="text-base font-semibold flex items-center gap-2">
                 <BarChart3 className="h-4 w-4" />
-                Top 5 Teknisi Bulan Ini
+                {t('adminDashboard.topTechniciansTitle', 'Top 5 Technicians This Month')}
               </CardTitle>
-              <CardDescription>Jumlah tiket selesai per teknisi pada bulan berjalan.</CardDescription>
+              <CardDescription>{t('adminDashboard.topTechniciansDesc', 'Number of completed tickets per technician this month.')}</CardDescription>
             </CardHeader>
             <CardContent>
               {isLoading ? (
@@ -327,8 +327,8 @@ export default function AdminDashboard() {
                 <div className="h-[280px]">
                   <Empty
                     variant={EMPTY_STATE_VARIANTS.NO_RESULTS}
-                    title="Belum ada data"
-                    description="Belum ada data tiket selesai bulan ini."
+                    title={t('adminDashboard.emptyTitle', 'No data yet')}
+                    description={t('adminDashboard.emptyDesc', 'No completed ticket data this month.')}
                   />
                 </div>
               )}

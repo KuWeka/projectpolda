@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import api from '@/lib/api.js';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card.jsx';
@@ -14,11 +15,12 @@ import { Checkbox } from '@/components/ui/checkbox.jsx';
 import { toast } from 'sonner';
 import { Loader2, Save, User, Lock, Bell, Globe, Palette, ToggleLeft, Clock, Smartphone, Wrench, ShieldAlert } from 'lucide-react';
 import SectionHeader from '@/components/SectionHeader.jsx';
+import i18n from '@/i18n/config.js';
 
 export default function TechnicianSettingsPage() {
+  const { t } = useTranslation();
   const { currentUser, setCurrentUser } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
-  const [techSettingsId, setTechSettingsId] = useState(null);
   
   // Data States
   const [profileData, setProfileData] = useState({ name: currentUser?.name || '', phone: currentUser?.phone || '' });
@@ -40,52 +42,21 @@ export default function TechnicianSettingsPage() {
   useEffect(() => {
     const fetchTechSettings = async () => {
       try {
-        let currentSettings = null;
-        const { data: records } = await api.get('/technician-settings', {
-          params: {
-            page: 1,
-            perPage: 1,
-            filter: `user_id = "${currentUser.id}"`
-          }
-        });
-        
-        if ((records?.items || []).length > 0) {
-          currentSettings = records.items[0];
-        } else {
-          try {
-            const { data } = await api.post('/technician-settings', {
-              user_id: currentUser.id,
-              is_active: true,
-              default_status: 'Aktif (Menerima Tiket)',
-              shift_start: '',
-              shift_end: '',
-              specializations: [],
-              max_active_tickets: null,
-              wa_notification_enabled: false
-            });
-            currentSettings = data;
-            toast.success('Pengaturan teknisi default berhasil dibuat');
-          } catch (err) {
-            console.error('Error creating default settings:', err);
-            toast.error('Gagal membuat pengaturan teknisi default');
-            return;
-          }
-        }
-
-        setTechSettingsId(currentSettings.id);
+        const { data: res } = await api.get(`/technicians/${currentUser.id}`);
+        const currentSettings = res?.data?.technician?.technician_settings || {};
         setTechData({
-          is_active: currentSettings.is_active,
-          default_status: currentSettings.default_status || 'Aktif (Menerima Tiket)',
+          is_active: Boolean(currentSettings.is_active),
+          default_status: currentSettings.is_active ? 'Aktif (Menerima Tiket)' : 'Tidak Bertugas',
           shift_start: currentSettings.shift_start || '',
           shift_end: currentSettings.shift_end || '',
-          wa_notification_enabled: currentSettings.wa_notification_enabled || false,
+          wa_notification_enabled: Boolean(currentSettings.wa_notification),
           specializations: currentSettings.specializations || [],
           max_active_tickets: currentSettings.max_active_tickets || ''
         });
         
       } catch (err) {
         console.error('Failed fetching tech settings', err);
-        toast.error('Gagal memuat pengaturan teknisi');
+        toast.error(t('techSettings.loadFailed', 'Failed to load technician settings'));
       }
     };
     
@@ -100,23 +71,32 @@ export default function TechnicianSettingsPage() {
       await api.patch(`/users/${currentUser.id}`, data);
       toast.success(successMsg);
     } catch (err) {
-      toast.error('Gagal memperbarui pengaturan');
+      toast.error(t('techSettings.updateFailed', 'Failed to update settings'));
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleTechUpdate = async (data, successMsg) => {
-    if (!techSettingsId) {
-      toast.error('Data pengaturan teknisi tidak ditemukan');
-      return;
+    const payload = { ...data };
+    if (payload.is_active !== undefined) {
+      payload.tech_is_active = payload.is_active;
+      delete payload.is_active;
     }
+    if (payload.wa_notification_enabled !== undefined) {
+      payload.wa_notification = payload.wa_notification_enabled;
+      delete payload.wa_notification_enabled;
+    }
+    if (payload.default_status !== undefined) {
+      delete payload.default_status;
+    }
+
     setIsLoading(true);
     try {
-      await api.patch(`/technician-settings/${techSettingsId}`, data);
+      await api.patch(`/technicians/${currentUser.id}`, payload);
       toast.success(successMsg);
     } catch (err) {
-      toast.error('Gagal memperbarui pengaturan teknisi');
+      toast.error(t('techSettings.updateTechFailed', 'Failed to update technician settings'));
     } finally {
       setIsLoading(false);
     }
@@ -124,7 +104,7 @@ export default function TechnicianSettingsPage() {
 
   const handlePasswordSave = async () => {
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast.error('Konfirmasi password tidak cocok'); return;
+      toast.error(t('techSettings.passwordMismatch', 'Password confirmation does not match')); return;
     }
     setIsLoading(true);
     try {
@@ -137,10 +117,10 @@ export default function TechnicianSettingsPage() {
         password: passwordData.newPassword,
         passwordConfirm: passwordData.confirmPassword
       });
-      toast.success('Password berhasil diubah');
+      toast.success(t('techSettings.passwordSaved', 'Password changed successfully'));
       setPasswordData({ oldPassword: '', newPassword: '', confirmPassword: '' });
     } catch (err) {
-      toast.error('Password lama salah atau gagal mengubah');
+      toast.error(t('techSettings.passwordFailed', 'Current password is incorrect or failed to update'));
     } finally {
       setIsLoading(false);
     }
@@ -163,6 +143,7 @@ export default function TechnicianSettingsPage() {
 
       localStorage.setItem('app_language', prefData.language);
       localStorage.setItem('app_theme', prefData.theme);
+      await i18n.changeLanguage(prefData.language.toLowerCase());
 
       const updatedUser = {
         ...currentUser,
@@ -173,41 +154,41 @@ export default function TechnicianSettingsPage() {
       localStorage.setItem('helpdesk_user', JSON.stringify(updatedUser));
       setCurrentUser(updatedUser);
 
-      toast.success('Preferensi disimpan');
+      toast.success(t('techSettings.preferencesSaved', 'Preferences saved'));
     } catch (err) {
-      toast.error('Gagal menyimpan preferensi');
+      toast.error(t('techSettings.preferencesFailed', 'Failed to save preferences'));
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500 pb-12">
+    <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-500 pb-12">
       <SectionHeader
-        title="Pengaturan Teknisi"
-        subtitle="Kelola profil, keamanan, dan preferensi kerja Anda"
+        title={t('nav.item.Pengaturan', 'Settings')}
+        subtitle={t('techSettings.subtitle', 'Manage your technician profile, security, and account preferences')}
       />
 
-      <Tabs defaultValue="profil" className="w-full flex flex-col md:flex-row gap-6">
-        <TabsList className="flex flex-row md:flex-col h-auto bg-muted/30 justify-start overflow-x-auto md:w-72 shrink-0 p-2 rounded-xl border gap-1">
-          <TabsTrigger value="profil" className="w-full justify-start gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><User className="h-4 w-4" /> Profil</TabsTrigger>
-          <TabsTrigger value="password" className="w-full justify-start gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><Lock className="h-4 w-4" /> Password</TabsTrigger>
-          <TabsTrigger value="notifikasi" className="w-full justify-start gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><Bell className="h-4 w-4" /> Notifikasi</TabsTrigger>
-          <TabsTrigger value="bahasa" className="w-full justify-start gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><Globe className="h-4 w-4" /> Bahasa</TabsTrigger>
-          <TabsTrigger value="tema" className="w-full justify-start gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><Palette className="h-4 w-4" /> Tema</TabsTrigger>
-          <TabsTrigger value="status" className="w-full justify-start gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><ToggleLeft className="h-4 w-4" /> Status Default</TabsTrigger>
-          <TabsTrigger value="shift" className="w-full justify-start gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><Clock className="h-4 w-4" /> Jam Shift</TabsTrigger>
-          <TabsTrigger value="wa" className="w-full justify-start gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><Smartphone className="h-4 w-4" /> Notif WhatsApp</TabsTrigger>
-          <TabsTrigger value="spesialisasi" className="w-full justify-start gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><Wrench className="h-4 w-4" /> Spesialisasi</TabsTrigger>
-          <TabsTrigger value="batas" className="w-full justify-start gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"><ShieldAlert className="h-4 w-4" /> Batas Tiket</TabsTrigger>
+      <Tabs defaultValue="profil" className="space-y-6">
+        <TabsList className="flex w-full flex-nowrap justify-start overflow-x-auto">
+          <TabsTrigger value="profil" className="gap-2 shrink-0"><User className="h-4 w-4" /><span>{t('techSettings.tabs.profile', 'Profile')}</span></TabsTrigger>
+          <TabsTrigger value="password" className="gap-2 shrink-0"><Lock className="h-4 w-4" /><span>{t('techSettings.tabs.password', 'Password')}</span></TabsTrigger>
+          <TabsTrigger value="notifikasi" className="gap-2 shrink-0"><Bell className="h-4 w-4" /><span>{t('techSettings.tabs.notifications', 'Notifications')}</span></TabsTrigger>
+          <TabsTrigger value="bahasa" className="gap-2 shrink-0"><Globe className="h-4 w-4" /><span>{t('techSettings.tabs.language', 'Language')}</span></TabsTrigger>
+          <TabsTrigger value="tema" className="gap-2 shrink-0"><Palette className="h-4 w-4" /><span>{t('techSettings.tabs.theme', 'Theme')}</span></TabsTrigger>
+          <TabsTrigger value="status" className="gap-2 shrink-0"><ToggleLeft className="h-4 w-4" /><span>{t('common.status', 'Status')}</span></TabsTrigger>
+          <TabsTrigger value="shift" className="gap-2 shrink-0"><Clock className="h-4 w-4" /><span>Shift</span></TabsTrigger>
+          <TabsTrigger value="wa" className="gap-2 shrink-0"><Smartphone className="h-4 w-4" /><span>WhatsApp</span></TabsTrigger>
+          <TabsTrigger value="spesialisasi" className="gap-2 shrink-0"><Wrench className="h-4 w-4" /><span>{t('techSettings.tabs.specialization', 'Specialization')}</span></TabsTrigger>
+          <TabsTrigger value="batas" className="gap-2 shrink-0"><ShieldAlert className="h-4 w-4" /><span>{t('techSettings.tabs.ticketLimit', 'Ticket Limit')}</span></TabsTrigger>
         </TabsList>
 
-        <div className="flex-1 min-w-0">
+        <div>
           
           {/* TAB 1: Profil */}
           <TabsContent value="profil" className="mt-0 outline-none">
             <Card className="border-border shadow-sm">
-              <CardHeader className="border-b"><CardTitle>Informasi Profil</CardTitle></CardHeader>
+              <CardHeader><CardTitle>Informasi Profil</CardTitle><CardDescription>Perbarui data diri Anda di sini.</CardDescription></CardHeader>
               <CardContent className="space-y-4 pt-6">
                 <div className="space-y-2 max-w-2xl">
                   <Label>Nama Lengkap</Label>
@@ -233,7 +214,7 @@ export default function TechnicianSettingsPage() {
           {/* TAB 2: Password */}
           <TabsContent value="password" className="mt-0 outline-none">
             <Card className="border-border shadow-sm">
-              <CardHeader className="border-b"><CardTitle>Ubah Password</CardTitle></CardHeader>
+              <CardHeader><CardTitle>Ubah Password</CardTitle><CardDescription>Pastikan akun Anda tetap aman dengan password yang kuat.</CardDescription></CardHeader>
               <CardContent className="space-y-4 pt-6">
                 <div className="space-y-2 max-w-2xl">
                   <Label>Password Lama</Label>
@@ -255,14 +236,14 @@ export default function TechnicianSettingsPage() {
           {/* TAB 3: Notifikasi */}
           <TabsContent value="notifikasi" className="mt-0 outline-none">
             <Card className="border-border shadow-sm">
-              <CardHeader className="border-b"><CardTitle>Notifikasi Sistem</CardTitle></CardHeader>
+              <CardHeader><CardTitle>{t('techSettings.notificationsTitle', 'System Notifications')}</CardTitle><CardDescription>{t('techSettings.notificationsDesc', 'Set your account notification channel preferences.')}</CardDescription></CardHeader>
               <CardContent className="space-y-6 pt-6">
                 <div className="flex items-center justify-between max-w-2xl">
-                  <Label className="text-base cursor-pointer" onClick={() => setNotifData({...notifData, email: !notifData.email})}>Notifikasi Email</Label>
+                  <Label className="text-base cursor-pointer" onClick={() => setNotifData({...notifData, email: !notifData.email})}>{t('techSettings.emailNotifications', 'Email Notifications')}</Label>
                   <Switch checked={notifData.email} onCheckedChange={(c) => setNotifData({...notifData, email: c})} />
                 </div>
                 <div className="flex items-center justify-between max-w-2xl">
-                  <Label className="text-base cursor-pointer" onClick={() => setNotifData({...notifData, chat: !notifData.chat})}>Notifikasi Chat</Label>
+                  <Label className="text-base cursor-pointer" onClick={() => setNotifData({...notifData, chat: !notifData.chat})}>{t('techSettings.chatNotifications', 'Chat Notifications')}</Label>
                   <Switch checked={notifData.chat} onCheckedChange={(c) => setNotifData({...notifData, chat: c})} />
                 </div>
               </CardContent>
@@ -273,7 +254,7 @@ export default function TechnicianSettingsPage() {
           {/* TAB 4: Bahasa */}
           <TabsContent value="bahasa" className="mt-0 outline-none">
             <Card className="border-border shadow-sm">
-              <CardHeader className="border-b"><CardTitle>Bahasa</CardTitle></CardHeader>
+              <CardHeader><CardTitle>Bahasa</CardTitle><CardDescription>Pilih bahasa antarmuka aplikasi.</CardDescription></CardHeader>
               <CardContent className="pt-6">
                 <div className="space-y-2 max-w-2xl">
                   <Label>Bahasa Antarmuka</Label>
@@ -293,7 +274,7 @@ export default function TechnicianSettingsPage() {
           {/* TAB 5: Tema */}
           <TabsContent value="tema" className="mt-0 outline-none">
             <Card className="border-border shadow-sm">
-              <CardHeader className="border-b"><CardTitle>Tema</CardTitle></CardHeader>
+              <CardHeader><CardTitle>Tema</CardTitle><CardDescription>Pilih mode tampilan yang paling nyaman.</CardDescription></CardHeader>
               <CardContent className="pt-6">
                 <RadioGroup value={prefData.theme} onValueChange={handleThemeChange} className="grid grid-cols-2 gap-4 max-w-2xl">
                   <div>
@@ -317,7 +298,7 @@ export default function TechnicianSettingsPage() {
           {/* TAB 6: Status Default */}
           <TabsContent value="status" className="mt-0 outline-none">
             <Card className="border-border shadow-sm">
-              <CardHeader className="border-b"><CardTitle>Status Bekerja</CardTitle></CardHeader>
+              <CardHeader><CardTitle>Status Bekerja</CardTitle><CardDescription>Atur status ketersediaan penanganan tiket.</CardDescription></CardHeader>
               <CardContent className="pt-6 space-y-4">
                 <div className="space-y-2 max-w-2xl">
                   <Label>Status Saat Ini</Label>
@@ -341,7 +322,7 @@ export default function TechnicianSettingsPage() {
           {/* TAB 7: Jam Shift */}
           <TabsContent value="shift" className="mt-0 outline-none">
             <Card className="border-border shadow-sm">
-              <CardHeader className="border-b"><CardTitle>Jam Shift</CardTitle><CardDescription>Di luar jam ini, status Anda otomatis menjadi Tidak Bertugas.</CardDescription></CardHeader>
+              <CardHeader><CardTitle>Jam Shift</CardTitle><CardDescription>Di luar jam ini, status Anda otomatis menjadi Tidak Bertugas.</CardDescription></CardHeader>
               <CardContent className="pt-6 space-y-4">
                 <div className="flex gap-4 max-w-2xl">
                   <div className="space-y-2 flex-1">
@@ -361,12 +342,12 @@ export default function TechnicianSettingsPage() {
           {/* TAB 8: Notif WA */}
           <TabsContent value="wa" className="mt-0 outline-none">
             <Card className="border-border shadow-sm">
-              <CardHeader className="border-b"><CardTitle>Notifikasi WhatsApp</CardTitle></CardHeader>
+              <CardHeader><CardTitle>{t('techSettings.whatsappTitle', 'WhatsApp Notifications')}</CardTitle><CardDescription>{t('techSettings.whatsappDesc', 'Enable new ticket notifications via WhatsApp.')}</CardDescription></CardHeader>
               <CardContent className="pt-6">
                 <div className="flex items-center justify-between max-w-2xl">
                   <div className="space-y-0.5">
                     <Label className="text-base cursor-pointer" onClick={() => setTechData({...techData, wa_notification_enabled: !techData.wa_notification_enabled})}>Terima Pesan WA</Label>
-                    <p className="text-sm text-muted-foreground">Notifikasi tiket baru via WhatsApp</p>
+                    <p className="text-sm text-muted-foreground">{t('techSettings.whatsappNote', 'New ticket notifications via WhatsApp')}</p>
                   </div>
                   <Switch checked={techData.wa_notification_enabled} onCheckedChange={(c) => setTechData({...techData, wa_notification_enabled: c})} />
                 </div>
@@ -378,7 +359,7 @@ export default function TechnicianSettingsPage() {
           {/* TAB 9: Spesialisasi */}
           <TabsContent value="spesialisasi" className="mt-0 outline-none">
             <Card className="border-border shadow-sm">
-              <CardHeader className="border-b"><CardTitle>Keahlian Khusus</CardTitle><CardDescription>Pilih bidang yang menjadi fokus perbaikan Anda.</CardDescription></CardHeader>
+              <CardHeader><CardTitle>Keahlian Khusus</CardTitle><CardDescription>Pilih bidang yang menjadi fokus perbaikan Anda.</CardDescription></CardHeader>
               <CardContent className="pt-6">
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 max-w-2xl">
                   {specsList.map((spec) => (
@@ -403,7 +384,7 @@ export default function TechnicianSettingsPage() {
           {/* TAB 10: Batas Tiket */}
           <TabsContent value="batas" className="mt-0 outline-none">
             <Card className="border-border shadow-sm">
-              <CardHeader className="border-b"><CardTitle>Batas Tiket Aktif</CardTitle><CardDescription>Maksimal tiket status Proses yang bisa Anda pegang bersamaan.</CardDescription></CardHeader>
+              <CardHeader><CardTitle>{t('techSettings.activeTicketLimitTitle', 'Active Ticket Limit')}</CardTitle><CardDescription>{t('techSettings.activeTicketLimitDesc', 'Maximum in-progress tickets you can handle at once.')}</CardDescription></CardHeader>
               <CardContent className="pt-6">
                 <div className="space-y-2 max-w-sm">
                   <Label>Jumlah Maksimal</Label>

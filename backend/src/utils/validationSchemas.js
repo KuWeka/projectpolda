@@ -98,8 +98,9 @@ const ticketSchemas = {
   create: Joi.object({
     title: Joi.string().min(5).max(200).trim().required(),
     description: patterns.description.required(),
+    location: Joi.string().max(255).allow('').optional(),
     urgency: patterns.urgency.required(),
-    category: Joi.string().min(2).max(50).trim().required(),
+    category: Joi.string().min(2).max(50).trim().default('Umum'),
     user_id: patterns.uuid.optional()
   }),
 
@@ -122,6 +123,8 @@ const ticketSchemas = {
     user_id: patterns.uuid,
     assigned_technician_id: patterns.uuid.allow(null),
     unassigned: Joi.boolean(),
+    from: Joi.date().iso(),
+    to: Joi.date().iso(),
     search: Joi.string().min(1).max(100).trim(),
     sort: Joi.string().valid('created_at', 'updated_at', 'urgency', 'status').default('created_at'),
     order: Joi.string().valid('asc', 'desc').default('desc')

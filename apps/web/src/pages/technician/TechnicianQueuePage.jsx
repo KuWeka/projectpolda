@@ -59,9 +59,9 @@ export default function TechnicianQueuePage() {
       setTickets(extractItems(data));
     } catch (err) {
       console.error('Error fetching queue:', err);
-      const message = extractApiErrorMessage(err, 'Gagal memuat antrian tiket. Silakan coba lagi.');
+      const message = extractApiErrorMessage(err, t('techQueue.loadFailed', 'Failed to load ticket queue. Please try again.'));
       setError(message);
-      toast.error('Gagal memuat antrian tiket');
+      toast.error(t('techQueue.loadFailedShort', 'Failed to load ticket queue'));
     } finally {
       setIsLoading(false);
     }
@@ -75,7 +75,7 @@ export default function TechnicianQueuePage() {
     <div className="space-y-6 animate-in fade-in duration-500">
       <SectionHeader
         title={t('tickets.queue', 'Antrian Tiket')}
-        subtitle="Daftar tiket berstatus Pending yang belum ditugaskan dan siap diproses."
+        subtitle={t('techQueue.subtitle', 'List of pending unassigned tickets ready to be processed.')}
       />
 
       {error && (
@@ -84,19 +84,17 @@ export default function TechnicianQueuePage() {
         </div>
       )}
 
-      <Card className="border-border shadow-sm overflow-hidden">
-        <CardContent className="p-0">
-          <div className="overflow-x-auto rounded-lg border border-border">
+      <div className="overflow-x-auto rounded-lg border border-border">
             <Table className="min-w-full">
               <TableHeader className="bg-muted/50">
                 <TableRow>
-                  <TableHead className="w-[130px] px-6">ID Tiket</TableHead>
-                  <TableHead>Judul</TableHead>
-                  <TableHead>Urgensi</TableHead>
-                  <TableHead>Divisi</TableHead>
+                  <TableHead className="w-[130px] px-6">{t('common.ticketId', 'Ticket ID')}</TableHead>
+                  <TableHead>{t('common.title', 'Title')}</TableHead>
+                  <TableHead>{t('common.urgency', 'Urgency')}</TableHead>
+                  <TableHead>{t('common.division', 'Division')}</TableHead>
                   <TableHead>{t('tickets.reporter', 'Pelapor')}</TableHead>
-                  <TableHead>Tanggal Dibuat</TableHead>
-                  <TableHead className="text-right px-6">Aksi</TableHead>
+                  <TableHead>{t('techQueue.createdDate', 'Created Date')}</TableHead>
+                  <TableHead className="text-right px-6">{t('common.actions', 'Actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -134,7 +132,7 @@ export default function TechnicianQueuePage() {
                       <TableCell className="text-right px-6">
                         <Button variant="outline" size="sm" asChild>
                           <Link to={`/technician/tickets/${ticket.id}`}>
-                            <Eye className="mr-1.5 h-3.5 w-3.5" /> Detail
+                            <Eye className="mr-1.5 h-3.5 w-3.5" /> {t('common.detail', 'Detail')}
                           </Link>
                         </Button>
                       </TableCell>
@@ -146,7 +144,7 @@ export default function TechnicianQueuePage() {
                       <Empty
                         variant={EMPTY_STATE_VARIANTS.NO_RESULTS}
                         title={t('tickets.no_tickets', 'Tidak ada tiket')}
-                        description="Antrian tiket saat ini kosong."
+                          description={t('techDashboard.queueEmptyDesc', 'There are no tickets in queue at the moment.')}
                       />
                     </TableCell>
                   </TableRow>
@@ -154,8 +152,6 @@ export default function TechnicianQueuePage() {
               </TableBody>
             </Table>
           </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

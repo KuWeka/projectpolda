@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/contexts/AuthContext.jsx';
 import api from '@/lib/api.js';
 import socket from '@/lib/socket.js';
@@ -26,6 +27,7 @@ const extractItems = (payload) => {
 };
 
 export default function TechnicianChatsPage() {
+  const { t } = useTranslation();
   const { currentUser } = useAuth();
   
   const [chats, setChats] = useState([]);
@@ -168,7 +170,7 @@ export default function TechnicianChatsPage() {
       });
 
     } catch (error) {
-      toast.error('Gagal mengirim pesan');
+      toast.error(t('techChats.sendFailed', 'Failed to send message'));
     }
   };
 
@@ -179,11 +181,11 @@ export default function TechnicianChatsPage() {
         status: 'Closed'
       });
       
-      toast.success('Chat berhasil ditutup');
+      toast.success(t('techChats.closeSuccess', 'Chat closed successfully'));
       setIsCloseModalOpen(false);
       // Let the subscription update the list and activeChat
     } catch (error) {
-      toast.error('Gagal menutup chat');
+      toast.error(t('techChats.closeFailed', 'Failed to close chat'));
     } finally {
       setIsClosing(false);
     }
@@ -192,8 +194,8 @@ export default function TechnicianChatsPage() {
   const formatChatTime = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
-    if (isToday(date)) return `Hari ini ${format(date, 'HH:mm')}`;
-    if (isYesterday(date)) return `Kemarin ${format(date, 'HH:mm')}`;
+    if (isToday(date)) return `${t('techChats.today', 'Today')} ${format(date, 'HH:mm')}`;
+    if (isYesterday(date)) return `${t('techChats.yesterday', 'Yesterday')} ${format(date, 'HH:mm')}`;
     return format(date, 'dd MMM yyyy');
   };
 
@@ -209,11 +211,11 @@ export default function TechnicianChatsPage() {
       {/* Sidebar List */}
       <Card className={`w-full md:w-1/3 flex flex-col border-border shadow-sm overflow-hidden ${!showListOnMobile ? 'hidden md:flex' : 'flex'}`}>
         <div className="p-4 border-b bg-card space-y-4">
-          <h2 className="text-xl font-bold">Pesan Masuk</h2>
+          <h2 className="text-xl font-bold">{t('techChats.inbox', 'Inbox')}</h2>
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input 
-              placeholder="Cari nama pelapor atau tiket..." 
+              placeholder={t('techChats.searchPlaceholder', 'Search reporter name or ticket...')} 
               className="pl-9 bg-background"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -251,7 +253,7 @@ export default function TechnicianChatsPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-0.5">
                         <h3 className={`font-semibold text-sm truncate ${isActive ? 'text-primary' : 'text-foreground'}`}>
-                          {chat.user_name || 'User'}
+                          {chat.user_name || t('roles.user', 'User')}
                         </h3>
                         <span className="text-[10px] text-muted-foreground whitespace-nowrap shrink-0">
                           {formatChatTime(chat.updated)}
@@ -260,7 +262,7 @@ export default function TechnicianChatsPage() {
                       
                       <div className="flex items-center justify-between">
                         <p className="text-xs text-muted-foreground truncate pr-2">
-                          {chat.ticket_number ? `Tiket: ${chat.ticket_number}` : 'Umum'}
+                          {chat.ticket_number ? `${t('techChats.ticket', 'Ticket')}: ${chat.ticket_number}` : t('techChats.general', 'General')}
                         </p>
                         {chat.status === 'Closed' && (
                           <Badge variant="outline" className="text-[9px] px-1 py-0 h-3.5 text-muted-foreground">Closed</Badge>
@@ -274,8 +276,8 @@ export default function TechnicianChatsPage() {
           ) : (
             <Empty
               variant={EMPTY_STATE_VARIANTS.NO_RESULTS}
-              title="Tidak ada pesan"
-              description="Belum ada percakapan yang tersedia saat ini."
+              title={t('techChats.emptyListTitle', 'No messages')}
+              description={t('techChats.emptyListDesc', 'No conversations are available right now.')}
             />
           )}
           </div>
@@ -287,8 +289,8 @@ export default function TechnicianChatsPage() {
         {!activeChatId ? (
           <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground bg-muted/10">
             <MessageSquare className="h-12 w-12 mb-4 opacity-20" />
-            <h2 className="text-xl font-medium text-foreground">Pilih percakapan</h2>
-            <p className="text-sm">Klik salah satu chat di daftar untuk melihat pesan.</p>
+            <h2 className="text-xl font-medium text-foreground">{t('techChats.selectConversation', 'Select a conversation')}</h2>
+            <p className="text-sm">{t('techChats.selectConversationDesc', 'Click one chat from the list to view messages.')}</p>
           </div>
         ) : (
           <>
@@ -307,20 +309,20 @@ export default function TechnicianChatsPage() {
                 
                 <div>
                   <div className="flex items-center gap-2">
-                    <h2 className="font-bold text-foreground">{activeChat?.user_name || 'User'}</h2>
+                    <h2 className="font-bold text-foreground">{activeChat?.user_name || t('roles.user', 'User')}</h2>
                     <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 bg-muted text-muted-foreground">
-                      Pelapor
+                      {t('tickets.reporter', 'Reporter')}
                     </Badge>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    {activeChat?.ticket_number ? `Terkait: ${activeChat.ticket_number}` : ''}
+                    {activeChat?.ticket_number ? `${t('techChats.related', 'Related')}: ${activeChat.ticket_number}` : ''}
                   </p>
                 </div>
               </div>
               
               {activeChat?.status === 'Open' ? (
                 <Button variant="destructive" size="sm" onClick={() => setIsCloseModalOpen(true)} className="gap-2">
-                  <Lock className="h-4 w-4" /> <span className="hidden sm:inline">Tutup Chat</span>
+                  <Lock className="h-4 w-4" /> <span className="hidden sm:inline">{t('techChats.closeChat', 'Close Chat')}</span>
                 </Button>
               ) : (
                 <Badge variant="outline" className="text-muted-foreground bg-background">Closed</Badge>
@@ -338,8 +340,8 @@ export default function TechnicianChatsPage() {
               ) : messages.length === 0 ? (
                 <Empty
                   variant={EMPTY_STATE_VARIANTS.NO_RESULTS}
-                  title="Belum ada pesan"
-                  description="Percakapan belum memiliki pesan."
+                  title={t('techChats.emptyMessagesTitle', 'No messages yet')}
+                  description={t('techChats.emptyMessagesDesc', 'This conversation has no messages yet.')}
                 />
               ) : (
                 <div className="space-y-2">
@@ -360,7 +362,7 @@ export default function TechnicianChatsPage() {
                         <span className="size-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '150ms' }} />
                         <span className="size-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: '300ms' }} />
                       </div>
-                      <span>Anda sedang mengetik...</span>
+                      <span>{t('techChats.typing', 'You are typing...')}</span>
                     </div>
                   )}
                   <div ref={messagesEndRef} />
@@ -383,15 +385,15 @@ export default function TechnicianChatsPage() {
       <Dialog open={isCloseModalOpen} onOpenChange={setIsCloseModalOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Tutup Percakapan</DialogTitle>
+            <DialogTitle>{t('techChats.closeDialogTitle', 'Close Conversation')}</DialogTitle>
             <DialogDescription>
-              Anda yakin ingin menutup chat ini? Setelah ditutup, percakapan ini menjadi read-only dan tidak dapat dibalas lagi.
+              {t('techChats.closeDialogDesc', 'Are you sure you want to close this chat? After closing, this conversation becomes read-only and cannot be replied to.')}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="mt-4 gap-2">
-            <Button variant="outline" onClick={() => setIsCloseModalOpen(false)} disabled={isClosing}>Batal</Button>
+            <Button variant="outline" onClick={() => setIsCloseModalOpen(false)} disabled={isClosing}>{t('buttons.cancel', 'Cancel')}</Button>
             <Button variant="destructive" onClick={handleCloseChat} disabled={isClosing}>
-              {isClosing ? 'Memproses...' : 'Ya, Tutup Chat'}
+              {isClosing ? t('common.processing', 'Processing...') : t('techChats.confirmClose', 'Yes, Close Chat')}
             </Button>
           </DialogFooter>
         </DialogContent>

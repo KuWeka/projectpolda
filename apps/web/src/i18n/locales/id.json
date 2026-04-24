@@ -55,5 +55,349 @@
     "total_users": "Total: {{count}} pengguna",
     "total_techs": "Total: {{count}} teknisi",
     "active_techs": "Teknisi Aktif"
+  },
+  "nav": {
+    "group": {
+      "Menu Utama": "Menu Utama",
+      "Menu Teknisi": "Menu Teknisi",
+      "Manajemen Tiket": "Manajemen Tiket",
+      "Manajemen Pengguna": "Manajemen Pengguna",
+      "Monitoring & Laporan": "Monitoring & Laporan",
+      "Sistem": "Sistem"
+    },
+    "item": {
+      "Dashboard": "Dashboard",
+      "Tiket Saya": "Tiket Saya",
+      "Buat Tiket": "Buat Tiket",
+      "Chat": "Chat",
+      "Pengaturan": "Pengaturan",
+      "Antrian Tiket": "Antrian Tiket",
+      "Semua Tiket": "Semua Tiket",
+      "Riwayat Tiket": "Riwayat Tiket",
+      "Kelola User": "Kelola User",
+      "Kelola Teknisi": "Kelola Teknisi",
+      "Monitoring Chat": "Monitoring Chat",
+      "Log Aktivitas": "Log Aktivitas",
+      "Pengaturan Sistem": "Pengaturan Sistem"
+    }
+  },
+  "header": {
+    "notifications": {
+      "label": "Notifikasi",
+      "empty": "Tidak ada notifikasi saat ini",
+      "pending": {
+        "title": "Tiket Pending",
+        "detail": "{{detail}}"
+      },
+      "proses": {
+        "title": "Tiket Dalam Proses",
+        "detail": "{{detail}}"
+      },
+      "urgent": {
+        "title": "Prioritas Tinggi",
+        "detail": "{{detail}}"
+      },
+      "aging": {
+        "title": "Aging > 3 Hari",
+        "detail": "{{detail}}"
+      }
+    }
+  },
+  "common": {
+    "viewAll": "Lihat Semua",
+    "titleAndId": "Judul & ID",
+    "status": "Status",
+    "sort": "Urutkan",
+    "urgency": "Urgensi",
+    "newest": "Terbaru",
+    "oldest": "Tertua",
+    "from": "Dari",
+    "to": "Sampai",
+    "resetFilter": "Reset Filter",
+    "reset": "Reset",
+    "ticketId": "ID Tiket",
+    "title": "Judul",
+    "division": "Divisi",
+    "ticket": "Tiket",
+    "date": "Tanggal",
+    "actions": "Aksi",
+    "openMenu": "Buka menu",
+    "viewDetail": "Lihat Detail",
+    "deletePermanent": "Hapus Permanen",
+    "save": "Simpan",
+    "detail": "Detail",
+    "processing": "Memproses..."
+  },
+  "techDashboard": {
+    "workStatus": "Status Bekerja",
+    "active": "Aktif",
+    "offDuty": "Tidak Bertugas",
+    "take": "Ambil",
+    "myInProgressTitle": "Tiket Proses Milik Saya",
+    "queueEmptyDesc": "Belum ada tiket pada antrian saat ini.",
+    "myInProgressEmptyDesc": "Belum ada tiket proses milik teknisi saat ini.",
+    "cards": {
+      "allPending": "Semua Pending",
+      "allPendingNote": "Antrian tiket menunggu",
+      "myInProgress": "Tiket Proses Saya",
+      "myInProgressNote": "Sedang ditangani saat ini",
+      "completedToday": "Selesai Hari Ini",
+      "completedTodayNote": "Kinerja harian teknisi",
+      "totalThisMonth": "Total Bulan Ini",
+      "totalThisMonthNote": "Akumulasi tiket bulanan"
+    },
+    "insights": {
+      "trendTitle": "Tren Tiket Teknisi",
+      "noTrendTitle": "Data tren belum tersedia",
+      "noTrendDesc": "Tidak ada data trend untuk ditampilkan",
+      "slaTitle": "SLA Penyelesaian",
+      "slaDesc": "Rasio penyelesaian tiket teknisi hari ini",
+      "agingTitle": "Aging Tiket",
+      "agingDesc": "Tiket lebih dari 3 hari belum selesai",
+      "priorityTitle": "Prioritas Hari Ini",
+      "priorityDesc": "Tiket prioritas tinggi di antrian teknisi"
+    },
+    "takeDialog": {
+      "title": "Konfirmasi Ambil Tiket",
+      "desc": "Apakah Anda yakin ingin mengambil dan memproses tiket ini?",
+      "confirm": "Ya, Ambil Tiket"
+    },
+    "toast": {
+      "loadError": "Gagal memuat data dashboard",
+      "statusUpdated": "Status berhasil diubah",
+      "statusUpdateFailed": "Gagal merubah status",
+      "ticketTaken": "Tiket berhasil diambil",
+      "ticketTakeFailed": "Gagal mengambil tiket"
+    }
+  },
+  "userTickets": {
+    "subtitle": "Pantau status dan riwayat semua tiket yang Anda laporkan.",
+    "createNew": "Buat Tiket Baru",
+    "searchPlaceholder": "Cari ID tiket atau judul...",
+    "allStatus": "Semua Status",
+    "sortUrgencyDesc": "Darurat -> Rendah",
+    "completedFirst": "Selesai Dulu",
+    "unassigned": "Belum ditugaskan",
+    "emptyTitle": "Tidak ada tiket ditemukan",
+    "emptyDesc": "Coba sesuaikan filter pencarian Anda.",
+    "showing": "Menampilkan",
+    "of": "dari",
+    "tickets": "tiket"
+  },
+  "techTickets": {
+    "subtitle": "Daftar tiket yang ditugaskan kepada Anda.",
+    "allUrgency": "Semua Urgensi"
+  },
+  "techQueue": {
+    "loadFailed": "Gagal memuat antrian tiket. Silakan coba lagi.",
+    "loadFailedShort": "Gagal memuat antrian tiket",
+    "subtitle": "Daftar tiket berstatus Pending yang belum ditugaskan dan siap diproses.",
+    "createdDate": "Tanggal Dibuat"
+  },
+  "adminTickets": {
+    "subtitle": "Kelola dan pantau seluruh tiket bantuan dalam sistem.",
+    "allTechnicians": "Semua Teknisi",
+    "deleteTitle": "Hapus Tiket",
+    "deleteFailed": "Gagal menghapus tiket"
+  },
+  "activityLogs": {
+    "subtitle": "Audit trail tindakan sistem dari backend MySQL Edition.",
+    "searchPlaceholder": "Cari detail...",
+    "allActions": "Semua Aksi",
+    "allResources": "Semua Resource",
+    "timestamp": "Timestamp",
+    "resource": "Resource",
+    "detailJson": "Detail JSON",
+    "system": "System",
+    "emptyTitle": "Tidak ada log aktivitas",
+    "emptyDesc": "Belum ada aktivitas yang cocok dengan filter saat ini."
+  },
+  "ticketHistory": {
+    "loadFailed": "Gagal memuat riwayat tiket",
+    "deleteSuccess": "Tiket dan data terkait berhasil dihapus",
+    "subtitle": "Data historis tiket yang telah selesai, dibatalkan, atau ditolak.",
+    "completedThisMonth": "Selesai Bulan Ini",
+    "avgDuration": "Rata-rata Durasi",
+    "days": "Hari",
+    "successRate": "Rasio Kesuksesan",
+    "searchPlaceholder": "Cari tiket...",
+    "closedDate": "Tgl Selesai",
+    "duration": "Durasi",
+    "emptyTitle": "Tidak ada riwayat"
+  },
+  "manageUsers": {
+    "loadFailed": "Gagal memuat data pengguna",
+    "updateSuccess": "Pengguna berhasil diupdate",
+    "addSuccess": "Pengguna berhasil ditambahkan",
+    "saveFailed": "Gagal menyimpan data",
+    "deleteSuccess": "Pengguna berhasil dihapus",
+    "deleteFailed": "Gagal menghapus pengguna",
+    "roleFilter": "Filter Role",
+    "allRoles": "Semua Role",
+    "addUser": "Tambah Pengguna",
+    "nameEmail": "Nama & Email",
+    "phone": "No. HP",
+    "registerDate": "Tanggal Daftar",
+    "active": "Aktif",
+    "inactive": "Nonaktif",
+    "emptyTitle": "Tidak ada pengguna"
+  },
+  "manageTechs": {
+    "loadFailed": "Gagal memuat data teknisi",
+    "updateSuccess": "Teknisi diperbarui",
+    "promoteSuccess": "User berhasil dipromosikan menjadi Teknisi",
+    "saveFailed": "Gagal menyimpan teknisi",
+    "downgradeSuccess": "Role teknisi berhasil diturunkan menjadi User",
+    "downgradeFailed": "Gagal menurunkan role teknisi",
+    "deleteSuccess": "Akun teknisi berhasil dihapus permanen",
+    "deleteFailed": "Gagal menghapus akun teknisi",
+    "addTechnician": "Tambah Teknisi",
+    "nameInfo": "Nama & Info",
+    "contact": "Kontak",
+    "active": "Aktif",
+    "offDuty": "Tidak Bertugas",
+    "emptyTitle": "Tidak ada data teknisi",
+    "emptyDesc": "Belum ada teknisi terdaftar untuk ditampilkan."
+  },
+  "chatMonitoring": {
+    "loadFailed": "Gagal memuat data chat",
+    "loadMessagesFailed": "Gagal memuat pesan",
+    "deleteSuccess": "Chat berhasil dihapus",
+    "deleteFailed": "Gagal menghapus chat",
+    "deleteTitle": "Hapus Chat",
+    "deleteDesc": "Hapus chat ini? Semua pesan di dalamnya akan ikut terhapus. Tindakan ini tidak dapat dibatalkan.",
+    "deleting": "Menghapus...",
+    "delete": "Hapus",
+    "subtitle": "Pantau percakapan antara pelapor dan teknisi.",
+    "searchPlaceholder": "Cari nama atau tiket...",
+    "lastMessage": "Pesan Terakhir",
+    "emptyTitle": "Tidak ada chat",
+    "emptyDesc": "Belum ada percakapan yang cocok dengan filter saat ini."
+  },
+  "systemSettings": {
+    "saved": "berhasil disimpan",
+    "saveFailed": "Gagal menyimpan",
+    "subtitle": "Kelola konfigurasi sistem global aplikasi helpdesk.",
+    "tabs": {
+      "operationalHours": "Jam Operasional",
+      "ticketLimits": "Batas Tiket",
+      "notifications": "Notifikasi",
+      "email": "Email",
+      "language": "Bahasa",
+      "maintenance": "Maintenance"
+    },
+    "operationalHours": {
+      "title": "Jam Operasional",
+      "desc": "Luar jam operasional, tiket baru tidak dapat dibuat."
+    },
+    "openHour": "Jam Buka",
+    "closeHour": "Jam Tutup",
+    "defaultLanguage": "Bahasa Default",
+    "timezone": "Zona Waktu",
+    "backupStarted": "Mengekspor database...",
+    "backupDb": "Backup DB",
+    "cacheCleared": "Cache dibersihkan",
+    "clearCache": "Clear Cache",
+    "ticketLimitsTitle": "Batas Tiket Global",
+    "ticketLimitsDesc": "Atur kapasitas antrian dan batas per teknisi.",
+    "maxPendingQueue": "Maksimal Antrian Pending",
+    "defaultPerTechLimit": "Default Batas Tiket Per Teknisi",
+    "notificationsTitle": "Notifikasi Sistem",
+    "notificationsDesc": "Pilih kanal notifikasi yang diaktifkan secara default.",
+    "emailNotifications": "Email Notifikasi",
+    "internalChatApp": "Chat App Internal",
+    "whatsappGateway": "WhatsApp Gateway",
+    "emailSettingsTitle": "Pengaturan Email",
+    "emailSettingsDesc": "Kelola identitas pengirim dan template notifikasi.",
+    "defaultTemplateText": "Templat Default (Teks)",
+    "localeTimeTitle": "Lokal & Waktu",
+    "localeTimeDesc": "Atur bahasa bawaan dan zona waktu sistem.",
+    "maintenanceTitle": "Maintenance System",
+    "maintenanceDesc": "Kelola mode maintenance dan utilitas pemeliharaan.",
+    "maintenanceMode": "Maintenance Mode",
+    "maintenanceModeDesc": "User tidak dapat login saat maintenance."
+  },
+  "adminDashboard": {
+    "totalTickets": "Total Tiket",
+    "totalTicketsNote": "Semua tiket terdaftar",
+    "pendingNote": "Menunggu penanganan",
+    "inProgressNote": "Sedang dikerjakan",
+    "completedNote": "Telah diselesaikan",
+    "activeTechsNote": "Teknisi sedang bertugas",
+    "users": "Pengguna",
+    "usersNote": "Total user terdaftar",
+    "noDataSection": "Belum ada data untuk ditampilkan pada bagian ini.",
+    "topTechniciansTitle": "Top 5 Teknisi Bulan Ini",
+    "topTechniciansDesc": "Jumlah tiket selesai per teknisi pada bulan berjalan.",
+    "emptyTitle": "Belum ada data",
+    "emptyDesc": "Belum ada data tiket selesai bulan ini.",
+    "tables": {
+      "pendingLatest": "Tiket Pending Terbaru",
+      "inProgress": "Tiket Sedang Proses",
+      "completedLatest": "Tiket Selesai Terbaru"
+    },
+    "insights": {
+      "trendTitle": "Tren Tiket Bulan Ini",
+      "noTrendTitle": "Data tren belum tersedia",
+      "noTrendDesc": "Belum ada data trend untuk ditampilkan",
+      "slaTitle": "SLA Penyelesaian",
+      "slaDesc": "tiket berhasil diselesaikan dari total tiket",
+      "agingTitle": "Aging Tiket",
+      "agingDesc": "Tiket lebih dari 3 hari belum selesai",
+      "priorityTitle": "Prioritas Hari Ini",
+      "priorityDesc": "Tiket prioritas tinggi yang perlu aksi cepat"
+    }
+  },
+  "techChats": {
+    "sendFailed": "Gagal mengirim pesan",
+    "closeSuccess": "Chat berhasil ditutup",
+    "closeFailed": "Gagal menutup chat",
+    "today": "Hari ini",
+    "yesterday": "Kemarin",
+    "inbox": "Pesan Masuk",
+    "searchPlaceholder": "Cari nama pelapor atau tiket...",
+    "ticket": "Tiket",
+    "general": "Umum",
+    "emptyListTitle": "Tidak ada pesan",
+    "emptyListDesc": "Belum ada percakapan yang tersedia saat ini.",
+    "selectConversation": "Pilih percakapan",
+    "selectConversationDesc": "Klik salah satu chat di daftar untuk melihat pesan.",
+    "related": "Terkait",
+    "closeChat": "Tutup Chat",
+    "emptyMessagesTitle": "Belum ada pesan",
+    "emptyMessagesDesc": "Percakapan belum memiliki pesan.",
+    "typing": "Anda sedang mengetik...",
+    "closeDialogTitle": "Tutup Percakapan",
+    "closeDialogDesc": "Anda yakin ingin menutup chat ini? Setelah ditutup, percakapan ini menjadi read-only dan tidak dapat dibalas lagi.",
+    "confirmClose": "Ya, Tutup Chat"
+  },
+  "techSettings": {
+    "loadFailed": "Gagal memuat pengaturan teknisi",
+    "updateFailed": "Gagal memperbarui pengaturan",
+    "updateTechFailed": "Gagal memperbarui pengaturan teknisi",
+    "passwordMismatch": "Konfirmasi password tidak cocok",
+    "passwordSaved": "Password berhasil diubah",
+    "passwordFailed": "Password lama salah atau gagal mengubah",
+    "preferencesSaved": "Preferensi disimpan",
+    "preferencesFailed": "Gagal menyimpan preferensi",
+    "subtitle": "Kelola profil, keamanan, dan preferensi akun teknisi Anda",
+    "tabs": {
+      "profile": "Profil",
+      "password": "Password",
+      "notifications": "Notifikasi",
+      "language": "Bahasa",
+      "theme": "Tema",
+      "specialization": "Spesialisasi",
+      "ticketLimit": "Batas Tiket"
+    },
+    "notificationsTitle": "Notifikasi Sistem",
+    "notificationsDesc": "Atur preferensi kanal notifikasi akun Anda.",
+    "emailNotifications": "Notifikasi Email",
+    "chatNotifications": "Notifikasi Chat",
+    "whatsappTitle": "Notifikasi WhatsApp",
+    "whatsappDesc": "Aktifkan notifikasi tiket baru melalui WhatsApp.",
+    "whatsappNote": "Notifikasi tiket baru via WhatsApp",
+    "activeTicketLimitTitle": "Batas Tiket Aktif",
+    "activeTicketLimitDesc": "Maksimal tiket status Proses yang bisa Anda pegang bersamaan."
   }
 }

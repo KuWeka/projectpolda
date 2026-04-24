@@ -55,5 +55,349 @@
     "total_users": "Total: {{count}} users",
     "total_techs": "Total: {{count}} technicians",
     "active_techs": "Active Technicians"
+  },
+  "nav": {
+    "group": {
+      "Menu Utama": "Main Menu",
+      "Menu Teknisi": "Technician Menu",
+      "Manajemen Tiket": "Ticket Management",
+      "Manajemen Pengguna": "User Management",
+      "Monitoring & Laporan": "Monitoring & Reports",
+      "Sistem": "System"
+    },
+    "item": {
+      "Dashboard": "Dashboard",
+      "Tiket Saya": "My Tickets",
+      "Buat Tiket": "Create Ticket",
+      "Chat": "Chat",
+      "Pengaturan": "Settings",
+      "Antrian Tiket": "Ticket Queue",
+      "Semua Tiket": "All Tickets",
+      "Riwayat Tiket": "Ticket History",
+      "Kelola User": "Manage Users",
+      "Kelola Teknisi": "Manage Technicians",
+      "Monitoring Chat": "Chat Monitoring",
+      "Log Aktivitas": "Activity Logs",
+      "Pengaturan Sistem": "System Settings"
+    }
+  },
+  "header": {
+    "notifications": {
+      "label": "Notifications",
+      "empty": "No notifications at the moment",
+      "pending": {
+        "title": "Pending Tickets",
+        "detail": "{{detail}}"
+      },
+      "proses": {
+        "title": "In Progress Tickets",
+        "detail": "{{detail}}"
+      },
+      "urgent": {
+        "title": "High Priority",
+        "detail": "{{detail}}"
+      },
+      "aging": {
+        "title": "Aging > 3 Days",
+        "detail": "{{detail}}"
+      }
+    }
+  },
+  "common": {
+    "viewAll": "View All",
+    "titleAndId": "Title & ID",
+    "status": "Status",
+    "sort": "Sort",
+    "urgency": "Urgency",
+    "newest": "Newest",
+    "oldest": "Oldest",
+    "from": "From",
+    "to": "To",
+    "resetFilter": "Reset Filter",
+    "reset": "Reset",
+    "ticketId": "Ticket ID",
+    "title": "Title",
+    "division": "Division",
+    "ticket": "Ticket",
+    "date": "Date",
+    "actions": "Actions",
+    "openMenu": "Open menu",
+    "viewDetail": "View Detail",
+    "deletePermanent": "Delete Permanently",
+    "save": "Save",
+    "detail": "Detail",
+    "processing": "Processing..."
+  },
+  "techDashboard": {
+    "workStatus": "Work Status",
+    "active": "Active",
+    "offDuty": "Off Duty",
+    "take": "Take",
+    "myInProgressTitle": "My In Progress Tickets",
+    "queueEmptyDesc": "There are no tickets in queue at the moment.",
+    "myInProgressEmptyDesc": "There are no in-progress tickets assigned to you at the moment.",
+    "cards": {
+      "allPending": "All Pending",
+      "allPendingNote": "Waiting queue tickets",
+      "myInProgress": "My In Progress Tickets",
+      "myInProgressNote": "Currently being handled",
+      "completedToday": "Completed Today",
+      "completedTodayNote": "Technician daily performance",
+      "totalThisMonth": "Total This Month",
+      "totalThisMonthNote": "Monthly ticket accumulation"
+    },
+    "insights": {
+      "trendTitle": "Technician Ticket Trend",
+      "noTrendTitle": "Trend data is not available yet",
+      "noTrendDesc": "No trend data to display",
+      "slaTitle": "SLA Completion",
+      "slaDesc": "Technician ticket completion ratio today",
+      "agingTitle": "Ticket Aging",
+      "agingDesc": "Tickets older than 3 days are still unresolved",
+      "priorityTitle": "Today Priority",
+      "priorityDesc": "High-priority tickets in technician queue"
+    },
+    "takeDialog": {
+      "title": "Confirm Take Ticket",
+      "desc": "Are you sure you want to take and process this ticket?",
+      "confirm": "Yes, Take Ticket"
+    },
+    "toast": {
+      "loadError": "Failed to load dashboard data",
+      "statusUpdated": "Status updated successfully",
+      "statusUpdateFailed": "Failed to update status",
+      "ticketTaken": "Ticket claimed successfully",
+      "ticketTakeFailed": "Failed to claim ticket"
+    }
+  },
+  "userTickets": {
+    "subtitle": "Monitor the status and history of all tickets you reported.",
+    "createNew": "Create New Ticket",
+    "searchPlaceholder": "Search ticket ID or title...",
+    "allStatus": "All Status",
+    "sortUrgencyDesc": "Critical -> Low",
+    "completedFirst": "Completed First",
+    "unassigned": "Not assigned",
+    "emptyTitle": "No tickets found",
+    "emptyDesc": "Try adjusting your search filters.",
+    "showing": "Showing",
+    "of": "of",
+    "tickets": "tickets"
+  },
+  "techTickets": {
+    "subtitle": "List of tickets assigned to you.",
+    "allUrgency": "All Urgency"
+  },
+  "techQueue": {
+    "loadFailed": "Failed to load ticket queue. Please try again.",
+    "loadFailedShort": "Failed to load ticket queue",
+    "subtitle": "List of pending unassigned tickets ready to be processed.",
+    "createdDate": "Created Date"
+  },
+  "adminTickets": {
+    "subtitle": "Manage and monitor all helpdesk tickets in the system.",
+    "allTechnicians": "All Technicians",
+    "deleteTitle": "Delete Ticket",
+    "deleteFailed": "Failed to delete ticket"
+  },
+  "activityLogs": {
+    "subtitle": "System action audit trail from backend MySQL edition.",
+    "searchPlaceholder": "Search details...",
+    "allActions": "All Actions",
+    "allResources": "All Resources",
+    "timestamp": "Timestamp",
+    "resource": "Resource",
+    "detailJson": "Detail JSON",
+    "system": "System",
+    "emptyTitle": "No activity logs",
+    "emptyDesc": "No activity matches current filters."
+  },
+  "ticketHistory": {
+    "loadFailed": "Failed to load ticket history",
+    "deleteSuccess": "Ticket and related data deleted successfully",
+    "subtitle": "Historical data of completed, canceled, or rejected tickets.",
+    "completedThisMonth": "Completed This Month",
+    "avgDuration": "Average Duration",
+    "days": "Days",
+    "successRate": "Success Rate",
+    "searchPlaceholder": "Search tickets...",
+    "closedDate": "Closed Date",
+    "duration": "Duration",
+    "emptyTitle": "No history"
+  },
+  "manageUsers": {
+    "loadFailed": "Failed to load user data",
+    "updateSuccess": "User updated successfully",
+    "addSuccess": "User added successfully",
+    "saveFailed": "Failed to save data",
+    "deleteSuccess": "User deleted successfully",
+    "deleteFailed": "Failed to delete user",
+    "roleFilter": "Role Filter",
+    "allRoles": "All Roles",
+    "addUser": "Add User",
+    "nameEmail": "Name & Email",
+    "phone": "Phone",
+    "registerDate": "Register Date",
+    "active": "Active",
+    "inactive": "Inactive",
+    "emptyTitle": "No users"
+  },
+  "manageTechs": {
+    "loadFailed": "Failed to load technicians",
+    "updateSuccess": "Technician updated",
+    "promoteSuccess": "User promoted to technician",
+    "saveFailed": "Failed to save technician",
+    "downgradeSuccess": "Technician role downgraded to user",
+    "downgradeFailed": "Failed to downgrade technician role",
+    "deleteSuccess": "Technician account deleted permanently",
+    "deleteFailed": "Failed to delete technician account",
+    "addTechnician": "Add Technician",
+    "nameInfo": "Name & Info",
+    "contact": "Contact",
+    "active": "Active",
+    "offDuty": "Off Duty",
+    "emptyTitle": "No technician data",
+    "emptyDesc": "No registered technicians to display yet."
+  },
+  "chatMonitoring": {
+    "loadFailed": "Failed to load chat data",
+    "loadMessagesFailed": "Failed to load messages",
+    "deleteSuccess": "Chat deleted successfully",
+    "deleteFailed": "Failed to delete chat",
+    "deleteTitle": "Delete Chat",
+    "deleteDesc": "Delete this chat? All messages inside will also be deleted. This action cannot be undone.",
+    "deleting": "Deleting...",
+    "delete": "Delete",
+    "subtitle": "Monitor conversations between reporters and technicians.",
+    "searchPlaceholder": "Search name or ticket...",
+    "lastMessage": "Last Message",
+    "emptyTitle": "No chat data",
+    "emptyDesc": "No conversations match current filters."
+  },
+  "systemSettings": {
+    "saved": "saved successfully",
+    "saveFailed": "Failed to save",
+    "subtitle": "Manage global system configuration for the helpdesk application.",
+    "tabs": {
+      "operationalHours": "Operational Hours",
+      "ticketLimits": "Ticket Limits",
+      "notifications": "Notifications",
+      "email": "Email",
+      "language": "Language",
+      "maintenance": "Maintenance"
+    },
+    "operationalHours": {
+      "title": "Operational Hours",
+      "desc": "Outside operational hours, new tickets cannot be created."
+    },
+    "openHour": "Open Hour",
+    "closeHour": "Close Hour",
+    "defaultLanguage": "Default Language",
+    "timezone": "Time Zone",
+    "backupStarted": "Exporting database...",
+    "backupDb": "Backup DB",
+    "cacheCleared": "Cache cleared",
+    "clearCache": "Clear Cache",
+    "ticketLimitsTitle": "Global Ticket Limits",
+    "ticketLimitsDesc": "Set queue capacity and per-technician limits.",
+    "maxPendingQueue": "Maximum Pending Queue",
+    "defaultPerTechLimit": "Default Ticket Limit Per Technician",
+    "notificationsTitle": "System Notifications",
+    "notificationsDesc": "Choose default notification channels.",
+    "emailNotifications": "Email Notifications",
+    "internalChatApp": "Internal Chat App",
+    "whatsappGateway": "WhatsApp Gateway",
+    "emailSettingsTitle": "Email Settings",
+    "emailSettingsDesc": "Manage sender identity and notification templates.",
+    "defaultTemplateText": "Default Template (Text)",
+    "localeTimeTitle": "Locale & Time",
+    "localeTimeDesc": "Set default language and system time zone.",
+    "maintenanceTitle": "Maintenance System",
+    "maintenanceDesc": "Manage maintenance mode and utility operations.",
+    "maintenanceMode": "Maintenance Mode",
+    "maintenanceModeDesc": "Users cannot log in during maintenance mode."
+  },
+  "adminDashboard": {
+    "totalTickets": "Total Tickets",
+    "totalTicketsNote": "All tickets registered",
+    "pendingNote": "Waiting for handling",
+    "inProgressNote": "Currently being worked on",
+    "completedNote": "Completed successfully",
+    "activeTechsNote": "Technicians on duty",
+    "users": "Users",
+    "usersNote": "Total registered users",
+    "noDataSection": "No data to display in this section.",
+    "topTechniciansTitle": "Top 5 Technicians This Month",
+    "topTechniciansDesc": "Number of completed tickets per technician this month.",
+    "emptyTitle": "No data yet",
+    "emptyDesc": "No completed ticket data this month.",
+    "tables": {
+      "pendingLatest": "Latest Pending Tickets",
+      "inProgress": "In Progress Tickets",
+      "completedLatest": "Latest Completed Tickets"
+    },
+    "insights": {
+      "trendTitle": "Ticket Trend This Month",
+      "noTrendTitle": "Trend data is not available yet",
+      "noTrendDesc": "No trend data to display",
+      "slaTitle": "SLA Completion",
+      "slaDesc": "tickets completed out of total tickets",
+      "agingTitle": "Ticket Aging",
+      "agingDesc": "Tickets older than 3 days are still unresolved",
+      "priorityTitle": "Today Priority",
+      "priorityDesc": "High-priority tickets that need quick action"
+    }
+  },
+  "techChats": {
+    "sendFailed": "Failed to send message",
+    "closeSuccess": "Chat closed successfully",
+    "closeFailed": "Failed to close chat",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "inbox": "Inbox",
+    "searchPlaceholder": "Search reporter name or ticket...",
+    "ticket": "Ticket",
+    "general": "General",
+    "emptyListTitle": "No messages",
+    "emptyListDesc": "No conversations are available right now.",
+    "selectConversation": "Select a conversation",
+    "selectConversationDesc": "Click one chat from the list to view messages.",
+    "related": "Related",
+    "closeChat": "Close Chat",
+    "emptyMessagesTitle": "No messages yet",
+    "emptyMessagesDesc": "This conversation has no messages yet.",
+    "typing": "You are typing...",
+    "closeDialogTitle": "Close Conversation",
+    "closeDialogDesc": "Are you sure you want to close this chat? After closing, this conversation becomes read-only and cannot be replied to.",
+    "confirmClose": "Yes, Close Chat"
+  },
+  "techSettings": {
+    "loadFailed": "Failed to load technician settings",
+    "updateFailed": "Failed to update settings",
+    "updateTechFailed": "Failed to update technician settings",
+    "passwordMismatch": "Password confirmation does not match",
+    "passwordSaved": "Password changed successfully",
+    "passwordFailed": "Current password is incorrect or failed to update",
+    "preferencesSaved": "Preferences saved",
+    "preferencesFailed": "Failed to save preferences",
+    "subtitle": "Manage your technician profile, security, and account preferences",
+    "tabs": {
+      "profile": "Profile",
+      "password": "Password",
+      "notifications": "Notifications",
+      "language": "Language",
+      "theme": "Theme",
+      "specialization": "Specialization",
+      "ticketLimit": "Ticket Limit"
+    },
+    "notificationsTitle": "System Notifications",
+    "notificationsDesc": "Set your account notification channel preferences.",
+    "emailNotifications": "Email Notifications",
+    "chatNotifications": "Chat Notifications",
+    "whatsappTitle": "WhatsApp Notifications",
+    "whatsappDesc": "Enable new ticket notifications via WhatsApp.",
+    "whatsappNote": "New ticket notifications via WhatsApp",
+    "activeTicketLimitTitle": "Active Ticket Limit",
+    "activeTicketLimitDesc": "Maximum in-progress tickets you can handle at once."
   }
 }

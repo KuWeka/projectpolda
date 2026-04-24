@@ -12,13 +12,15 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group.jsx';
 import { toast } from 'sonner';
 import { Loader2, Save, User, Lock, Palette } from 'lucide-react';
 import SectionHeader from '@/components/SectionHeader.jsx';
+import i18n from '@/i18n/config.js';
 
 
 export default function UserSettingsPage() {
   const { currentUser, setCurrentUser } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   
-  const initialLang = localStorage.getItem('app_language') || currentUser?.language || 'ID';
+  const rawInitialLang = localStorage.getItem('app_language') || currentUser?.language || 'ID';
+  const initialLang = String(rawInitialLang).toUpperCase() === 'EN' ? 'EN' : 'ID';
   
   const [profileData, setProfileData] = useState({
     name: currentUser?.name || '',
@@ -100,16 +102,14 @@ export default function UserSettingsPage() {
       
       localStorage.setItem('app_language', prefData.language);
       localStorage.setItem('app_theme', prefData.theme);
+
+      await i18n.changeLanguage(prefData.language.toLowerCase());
       
       const updatedUser = { ...currentUser, language: prefData.language, theme: prefData.theme };
       setCurrentUser(updatedUser);
       localStorage.setItem('helpdesk_user', JSON.stringify(updatedUser));
       
       toast.success('Preferensi berhasil disimpan');
-      
-      setTimeout(() => {
-        window.location.reload();
-      }, 500);
       
     } catch (err) {
       toast.error('Gagal menyimpan preferensi');

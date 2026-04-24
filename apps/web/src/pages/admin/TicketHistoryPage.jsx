@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import api from '@/lib/api.js';
 import { Card, CardContent } from '@/components/ui/card.jsx';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.jsx';
@@ -23,7 +24,7 @@ import StatusBadge from '@/components/StatusBadge.jsx';
 import UrgencyBadge from '@/components/UrgencyBadge.jsx';
 import { Empty, EMPTY_STATE_VARIANTS } from '@/components/ui/empty.jsx';
 import SectionHeader from '@/components/SectionHeader.jsx';
-import { format, differenceInDays, startOfMonth } from 'date-fns';
+import { format, differenceInDays, startOfMonth, isAfter, isEqual } from 'date-fns';
 import { toast } from 'sonner';
 
 const extractItems = (payload) => {
@@ -45,6 +46,7 @@ const safeFormat = (value, pattern = 'dd MMM yy') => {
 };
 
 export default function TicketHistoryPage() {
+  const { t } = useTranslation();
   const [tickets, setTickets] = useState([]);
   const [technicians, setTechnicians] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -69,16 +71,18 @@ export default function TicketHistoryPage() {
 
   const fetchAnalytics = async () => {
     try {
-      const startOfMonthStr = format(startOfMonth(new Date()), 'yyyy-MM-dd');
-      const { data: allClosedMonthRes } = await api.get('/tickets', {
+      const monthStart = startOfMonth(new Date());
+      const { data: allTicketsRes } = await api.get('/tickets', {
         params: {
-          from: startOfMonthStr,
           perPage: 500
         }
       });
 
-      const allClosedMonth = extractItems(allClosedMonthRes);
-      const completed = allClosedMonth.filter(t => t.status === 'Selesai');
+      const monthTickets = extractItems(allTicketsRes).filter((t) => {
+        const closedDate = safeDate(t.closed_at);
+        return closedDate && (isAfter(closedDate, monthStart) || isEqual(closedDate, monthStart));
+      });
+      const completed = monthTickets.filter((t) => t.status === 'Selesai');
       const completedCount = completed.length;
       
       let totalDays = 0;
@@ -91,7 +95,7 @@ export default function TicketHistoryPage() {
       });
 
       const avg = completedCount > 0 ? (totalDays / completedCount).toFixed(1) : 0;
-      const rate = allClosedMonth.length > 0 ? ((completedCount / allClosedMonth.length) * 100).toFixed(0) : 0;
+      const rate = monthTickets.length > 0 ? ((completedCount / monthTickets.length) * 100).toFixed(0) : 0;
 
       setAnalytics({ completedMonth: completedCount, avgDuration: avg, completionRate: rate });
     } catch (e) { console.error('Analytics err', e); }
@@ -119,7 +123,7 @@ export default function TicketHistoryPage() {
       setTickets(extractItems(data));
     } catch (err) {
       console.error(err);
-      toast.error('Gagal memuat riwayat tiket');
+      toast.error(t('ticketHistory.loadFailed', 'Failed to load ticket history'));
     } finally {
       setIsLoading(false);
     }
@@ -154,13 +158,13 @@ export default function TicketHistoryPage() {
 
       await api.delete(`/tickets/${selectedTicket.id}`);
       
-      toast.success('Tiket dan semua data terkait berhasil dihapus');
+      toast.success(t('ticketHistory.deleteSuccess', 'Ticket and related data deleted successfully'));
       setDetailModalOpen(false);
       fetchTickets();
       fetchAnalytics();
     } catch (error) {
       console.error('Error deleting ticket:', error);
-      toast.error(error.response?.message || 'Gagal menghapus tiket. Pastikan Anda memiliki hak akses Admin.');
+      toast.error(error.response?.message || t('adminTickets.deleteFailed', 'Failed to delete ticket'));
     } finally {
       setIsDeleting(false);
     }
@@ -169,65 +173,64 @@ export default function TicketHistoryPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500 pb-12">
       <SectionHeader
-        title="Riwayat Tiket"
-        subtitle="Data historis tiket yang telah selesai, dibatalkan, atau ditolak."
+        title={t('nav.item.Riwayat Tiket', 'Ticket History')}
+        subtitle={t('ticketHistory.subtitle', 'Historical data of completed, canceled, or rejected tickets.')}
       />
 
       <div className="grid md:grid-cols-3 gap-4 mb-6">
-        <Card className="border-border shadow-sm"><CardContent className="p-5 flex gap-4 items-center"><div className="p-3 bg-green-500/10 text-green-500 rounded-xl"><CheckCircle2 className="h-6 w-6"/></div><div><p className="text-sm font-medium text-muted-foreground">Selesai Bulan Ini</p><h3 className="text-2xl font-bold">{analytics.completedMonth}</h3></div></CardContent></Card>
-        <Card className="border-border shadow-sm"><CardContent className="p-5 flex gap-4 items-center"><div className="p-3 bg-blue-500/10 text-blue-500 rounded-xl"><Clock className="h-6 w-6"/></div><div><p className="text-sm font-medium text-muted-foreground">Rata-rata Durasi</p><h3 className="text-2xl font-bold">{analytics.avgDuration} <span className="text-sm font-normal text-muted-foreground">Hari</span></h3></div></CardContent></Card>
-        <Card className="border-border shadow-sm"><CardContent className="p-5 flex gap-4 items-center"><div className="p-3 bg-primary/10 text-primary rounded-xl"><Activity className="h-6 w-6"/></div><div><p className="text-sm font-medium text-muted-foreground">Rasio Kesuksesan</p><h3 className="text-2xl font-bold">{analytics.completionRate}%</h3></div></CardContent></Card>
+        <Card className="border-border shadow-sm"><CardContent className="p-5 flex gap-4 items-center"><div className="p-3 bg-green-500/10 text-green-500 rounded-xl"><CheckCircle2 className="h-6 w-6"/></div><div><p className="text-sm font-medium text-muted-foreground">{t('ticketHistory.completedThisMonth', 'Completed This Month')}</p><h3 className="text-2xl font-bold">{analytics.completedMonth}</h3></div></CardContent></Card>
+        <Card className="border-border shadow-sm"><CardContent className="p-5 flex gap-4 items-center"><div className="p-3 bg-blue-500/10 text-blue-500 rounded-xl"><Clock className="h-6 w-6"/></div><div><p className="text-sm font-medium text-muted-foreground">{t('ticketHistory.avgDuration', 'Average Duration')}</p><h3 className="text-2xl font-bold">{analytics.avgDuration} <span className="text-sm font-normal text-muted-foreground">{t('ticketHistory.days', 'Days')}</span></h3></div></CardContent></Card>
+        <Card className="border-border shadow-sm"><CardContent className="p-5 flex gap-4 items-center"><div className="p-3 bg-primary/10 text-primary rounded-xl"><Activity className="h-6 w-6"/></div><div><p className="text-sm font-medium text-muted-foreground">{t('ticketHistory.successRate', 'Success Rate')}</p><h3 className="text-2xl font-bold">{analytics.completionRate}%</h3></div></CardContent></Card>
       </div>
 
-      <Card className="border-border shadow-sm overflow-hidden">
-        <div className="p-4 bg-muted/50 border-b flex flex-wrap gap-4">
-          <Input placeholder="Cari tiket..." className="w-[200px] bg-background" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+      <div className="space-y-4">
+        <div className="flex flex-wrap gap-4">
+          <Input placeholder={t('ticketHistory.searchPlaceholder', 'Search tickets...')} className="w-[200px] bg-background" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-[140px] bg-background"><SelectValue /></SelectTrigger>
-            <SelectContent><SelectItem value="all">Semua Status</SelectItem><SelectItem value="Selesai">Selesai</SelectItem><SelectItem value="Dibatalkan">Dibatalkan</SelectItem><SelectItem value="Ditolak">Ditolak</SelectItem></SelectContent>
+            <SelectContent><SelectItem value="all">{t('userTickets.allStatus', 'All Status')}</SelectItem><SelectItem value="Selesai">{t('status.selesai', 'Completed')}</SelectItem><SelectItem value="Dibatalkan">{t('status.dibatalkan', 'Cancelled')}</SelectItem><SelectItem value="Ditolak">{t('status.ditolak', 'Rejected')}</SelectItem></SelectContent>
           </Select>
           <Select value={techFilter} onValueChange={setTechFilter}>
-            <SelectTrigger className="w-[160px] bg-background"><SelectValue placeholder="Teknisi" /></SelectTrigger>
-            <SelectContent><SelectItem value="all">Semua Teknisi</SelectItem>{technicians.map(t => <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>)}</SelectContent>
+            <SelectTrigger className="w-[160px] bg-background"><SelectValue placeholder={t('roles.technician', 'Technician')} /></SelectTrigger>
+            <SelectContent><SelectItem value="all">{t('adminTickets.allTechnicians', 'All Technicians')}</SelectItem>{technicians.map(tk => <SelectItem key={tk.id} value={tk.id}>{tk.name}</SelectItem>)}</SelectContent>
           </Select>
-          <Button variant="ghost" onClick={() => {setSearchTerm(''); setStatusFilter('all'); setTechFilter('all');}}><RefreshCcw className="h-4 w-4 mr-2" /> Reset</Button>
+          <Button variant="ghost" onClick={() => {setSearchTerm(''); setStatusFilter('all'); setTechFilter('all');}}><RefreshCcw className="h-4 w-4 mr-2" /> {t('common.reset', 'Reset')}</Button>
         </div>
-        <CardContent className="p-0">
-          <div className="overflow-x-auto rounded-lg border border-border">
+        <div className="overflow-x-auto rounded-lg border border-border">
             <Table className="min-w-full">
               <TableHeader className="bg-muted/30">
                 <TableRow>
-                  <TableHead className="px-6">ID & Judul</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Urgensi</TableHead>
-                  <TableHead>Teknisi</TableHead>
-                  <TableHead>Tgl Selesai</TableHead>
-                  <TableHead>Durasi</TableHead>
-                  <TableHead className="text-right px-6">Aksi</TableHead>
+                  <TableHead className="px-6">{t('common.titleAndId', 'Title & ID')}</TableHead>
+                  <TableHead>{t('common.status', 'Status')}</TableHead>
+                  <TableHead>{t('common.urgency', 'Urgency')}</TableHead>
+                  <TableHead>{t('roles.technician', 'Technician')}</TableHead>
+                  <TableHead>{t('ticketHistory.closedDate', 'Closed Date')}</TableHead>
+                  <TableHead>{t('ticketHistory.duration', 'Duration')}</TableHead>
+                  <TableHead className="text-right px-6">{t('common.actions', 'Actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
-                  <TableRow><TableCell colSpan={7} className="text-center h-24">Memuat data...</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={7} className="text-center h-24">{t('common.processing', 'Processing...')}</TableCell></TableRow>
                 ) : tickets.length > 0 ? (
-                  tickets.map((t) => {
-                    const closedDate = safeDate(t.closed_at);
-                    const createdDate = safeDate(t.created_at || t.created);
+                  tickets.map((ticket) => {
+                    const closedDate = safeDate(ticket.closed_at);
+                    const createdDate = safeDate(ticket.created_at || ticket.created);
                     const days = closedDate && createdDate ? differenceInDays(closedDate, createdDate) : null;
                     return (
-                      <TableRow key={t.id} className="hover:bg-muted/30 transition-colors">
+                      <TableRow key={ticket.id} className="hover:bg-muted/30 transition-colors">
                         <TableCell className="px-6 py-3">
-                          <div className="font-medium truncate max-w-[200px]">{t.title}</div>
-                          <div className="text-xs text-muted-foreground font-mono">{t.ticket_number}</div>
+                          <div className="font-medium truncate max-w-[200px]">{ticket.title}</div>
+                          <div className="text-xs text-muted-foreground font-mono">{ticket.ticket_number}</div>
                         </TableCell>
-                        <TableCell><StatusBadge status={t.status} /></TableCell>
-                        <TableCell><UrgencyBadge urgency={t.urgency} /></TableCell>
-                        <TableCell className="text-sm">{t.technician_name || t.assigned_technician_id || '-'}</TableCell>
-                        <TableCell className="text-sm text-muted-foreground">{safeFormat(t.closed_at)}</TableCell>
+                        <TableCell><StatusBadge status={ticket.status} /></TableCell>
+                        <TableCell><UrgencyBadge urgency={ticket.urgency} /></TableCell>
+                        <TableCell className="text-sm">{ticket.technician_name || ticket.assigned_technician_id || '-'}</TableCell>
+                        <TableCell className="text-sm text-muted-foreground">{safeFormat(ticket.closed_at)}</TableCell>
                         <TableCell className="text-sm">{days === null ? '-' : (days > 0 ? `${days} hari` : '< 1 hari')}</TableCell>
                         <TableCell className="text-right px-6">
-                          <Button variant="outline" size="sm" onClick={() => handleOpenDetail(t)}>
-                            <Eye className="h-4 w-4 mr-1.5" /> Detail
+                          <Button variant="outline" size="sm" onClick={() => handleOpenDetail(ticket)}>
+                            <Eye className="h-4 w-4 mr-1.5" /> {t('common.detail', 'Detail')}
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -238,7 +241,7 @@ export default function TicketHistoryPage() {
                     <TableCell colSpan={7} className="h-32">
                       <Empty
                         variant={EMPTY_STATE_VARIANTS.NO_RESULTS}
-                        title="Tidak ada riwayat"
+                        title={t('ticketHistory.emptyTitle', 'No history')}
                         description="Belum ada tiket yang cocok dengan filter saat ini."
                       />
                     </TableCell>
@@ -247,8 +250,7 @@ export default function TicketHistoryPage() {
               </TableBody>
             </Table>
           </div>
-        </CardContent>
-      </Card>
+      </div>
 
       <Dialog open={detailModalOpen} onOpenChange={(open) => !open && setDetailModalOpen(false)}>
         <DialogContent className="sm:max-w-2xl">

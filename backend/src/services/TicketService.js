@@ -60,6 +60,16 @@ class TicketService {
       }
     }
 
+    if (filters.from) {
+      query += ' AND DATE(t.created_at) >= DATE(?)';
+      params.push(filters.from);
+    }
+
+    if (filters.to) {
+      query += ' AND DATE(t.created_at) <= DATE(?)';
+      params.push(filters.to);
+    }
+
     if (filters.search) {
       query += ' AND (t.title LIKE ? OR t.description LIKE ? OR t.ticket_number LIKE ?)';
       const searchTerm = `%${filters.search}%`;

@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import api from '@/lib/api.js';
 import { Card, CardContent } from '@/components/ui/card.jsx';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table.jsx';
@@ -31,6 +32,7 @@ const safeFormatDate = (value, pattern = 'dd/MM/yyyy HH:mm:ss') => {
 };
 
 export default function ActivityLogsPage() {
+  const { t } = useTranslation();
   const [logs, setLogs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   
@@ -73,20 +75,20 @@ export default function ActivityLogsPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       <SectionHeader
-        title="Log Aktivitas"
-        subtitle="Audit trail tindakan sistem dari backend MySQL Edition."
+        title={t('nav.item.Log Aktivitas', 'Activity Logs')}
+        subtitle={t('activityLogs.subtitle', 'System action audit trail from backend MySQL edition.')}
       />
 
-      <Card className="border-border shadow-sm overflow-hidden">
-        <div className="p-4 bg-muted/50 border-b flex flex-wrap gap-4">
+      <div className="space-y-4">
+        <div className="flex flex-wrap gap-4">
           <div className="relative w-full sm:w-[250px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Cari detail..." className="pl-9 bg-background" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+            <Input placeholder={t('activityLogs.searchPlaceholder', 'Search details...')} className="pl-9 bg-background" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
           </div>
           <Select value={actionFilter} onValueChange={setActionFilter}>
             <SelectTrigger className="w-[140px] bg-background"><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Semua Aksi</SelectItem>
+              <SelectItem value="all">{t('activityLogs.allActions', 'All Actions')}</SelectItem>
               <SelectItem value="Create">Create</SelectItem>
               <SelectItem value="Update">Update</SelectItem>
               <SelectItem value="Delete">Delete</SelectItem>
@@ -95,8 +97,8 @@ export default function ActivityLogsPage() {
           <Select value={resourceFilter} onValueChange={setResourceFilter}>
             <SelectTrigger className="w-[140px] bg-background"><SelectValue /></SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Semua Resource</SelectItem>
-              <SelectItem value="Tiket">Tiket</SelectItem>
+              <SelectItem value="all">{t('activityLogs.allResources', 'All Resources')}</SelectItem>
+              <SelectItem value="Tiket">{t('common.ticket', 'Ticket')}</SelectItem>
               <SelectItem value="User">User</SelectItem>
               <SelectItem value="Teknisi">Teknisi</SelectItem>
               <SelectItem value="Chat">Chat</SelectItem>
@@ -104,16 +106,15 @@ export default function ActivityLogsPage() {
           </Select>
         </div>
         
-        <CardContent className="p-0">
-          <div className="overflow-x-auto rounded-lg border border-border">
+        <div className="overflow-x-auto rounded-lg border border-border">
             <Table className="min-w-full">
               <TableHeader className="bg-muted/30">
                 <TableRow>
-                  <TableHead className="px-6 w-[160px]">Timestamp</TableHead>
-                  <TableHead>User</TableHead>
-                  <TableHead>Aksi</TableHead>
-                  <TableHead>Resource</TableHead>
-                  <TableHead>Detail JSON</TableHead>
+                  <TableHead className="px-6 w-[160px]">{t('activityLogs.timestamp', 'Timestamp')}</TableHead>
+                  <TableHead>{t('roles.user', 'User')}</TableHead>
+                  <TableHead>{t('common.actions', 'Actions')}</TableHead>
+                  <TableHead>{t('activityLogs.resource', 'Resource')}</TableHead>
+                  <TableHead>{t('activityLogs.detailJson', 'Detail JSON')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -131,7 +132,7 @@ export default function ActivityLogsPage() {
                   logs.map((l) => (
                     <TableRow key={l.id} className="hover:bg-muted/30">
                       <TableCell className="px-6 text-xs text-muted-foreground font-mono">{safeFormatDate(l.created_at || l.created)}</TableCell>
-                      <TableCell className="font-medium text-sm">{l.admin_name || 'System'}</TableCell>
+                      <TableCell className="font-medium text-sm">{l.admin_name || t('activityLogs.system', 'System')}</TableCell>
                       <TableCell>
                         <Badge variant="outline" className={
                           l.action_type === 'Create' ? 'text-green-600 border-green-200 bg-green-50' :
@@ -151,8 +152,8 @@ export default function ActivityLogsPage() {
                       <Empty
                         className="border-0 shadow-none"
                         variant={EMPTY_STATE_VARIANTS.NO_RESULTS}
-                        title="Tidak ada log aktivitas"
-                        description="Belum ada aktivitas yang cocok dengan filter saat ini."
+                        title={t('activityLogs.emptyTitle', 'No activity logs')}
+                        description={t('activityLogs.emptyDesc', 'No activity matches current filters.')}
                       />
                     </TableCell>
                   </TableRow>
@@ -160,8 +161,7 @@ export default function ActivityLogsPage() {
               </TableBody>
             </Table>
           </div>
-        </CardContent>
-      </Card>
+      </div>
     </div>
   );
 }

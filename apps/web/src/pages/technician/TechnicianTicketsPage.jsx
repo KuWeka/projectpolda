@@ -86,17 +86,17 @@ export default function TechnicianTicketsPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       <SectionHeader
-        title="Tiket Saya"
-        subtitle="Daftar tiket yang ditugaskan kepada Anda."
+        title={t('nav.item.Tiket Saya', 'My Tickets')}
+        subtitle={t('techTickets.subtitle', 'List of tickets assigned to you.')}
       />
 
-      <Card className="border-border shadow-sm overflow-hidden">
-        <div className="p-4 bg-muted/50 border-b space-y-4">
+      <div className="space-y-4">
+        <div className="space-y-4">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input 
-                placeholder="Cari ID tiket atau judul..." 
+                placeholder={t('userTickets.searchPlaceholder', 'Search ticket ID or title...')} 
                 className="pl-9 bg-background"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -105,10 +105,10 @@ export default function TechnicianTicketsPage() {
             <div className="flex flex-wrap sm:flex-nowrap items-center gap-3">
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-[140px] bg-background">
-                  <SelectValue placeholder="Status" />
+                  <SelectValue placeholder={t('common.status', 'Status')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Semua Status</SelectItem>
+                  <SelectItem value="all">{t('userTickets.allStatus', 'All Status')}</SelectItem>
                   <SelectItem value={TICKET_STATUS.PROSES}>{t('status.proses')}</SelectItem>
                   <SelectItem value={TICKET_STATUS.SELESAI}>{t('status.selesai')}</SelectItem>
                   <SelectItem value={TICKET_STATUS.DIBATALKAN}>{t('status.dibatalkan')}</SelectItem>
@@ -118,10 +118,10 @@ export default function TechnicianTicketsPage() {
 
               <Select value={urgencyFilter} onValueChange={setUrgencyFilter}>
                 <SelectTrigger className="w-[140px] bg-background">
-                  <SelectValue placeholder="Urgensi" />
+                  <SelectValue placeholder={t('common.urgency', 'Urgency')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Semua Urgensi</SelectItem>
+                  <SelectItem value="all">{t('techTickets.allUrgency', 'All Urgency')}</SelectItem>
                   <SelectItem value="Rendah">Rendah</SelectItem>
                   <SelectItem value="Sedang">Sedang</SelectItem>
                   <SelectItem value="Tinggi">Tinggi</SelectItem>
@@ -131,12 +131,12 @@ export default function TechnicianTicketsPage() {
 
               <Select value={sortOrder} onValueChange={setSortOrder}>
                 <SelectTrigger className="w-[160px] bg-background">
-                  <SelectValue placeholder="Urutkan" />
+                  <SelectValue placeholder={t('common.sort', 'Sort')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="urgency_desc">Darurat → Rendah</SelectItem>
-                  <SelectItem value="newest">Terbaru</SelectItem>
-                  <SelectItem value="oldest">Tertua</SelectItem>
+                  <SelectItem value="urgency_desc">{t('userTickets.sortUrgencyDesc', 'Critical -> Low')}</SelectItem>
+                  <SelectItem value="newest">{t('common.newest', 'Newest')}</SelectItem>
+                  <SelectItem value="oldest">{t('common.oldest', 'Oldest')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -144,31 +144,30 @@ export default function TechnicianTicketsPage() {
           
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-2 text-sm">
-              <span className="text-muted-foreground">Dari:</span>
+              <span className="text-muted-foreground">{t('common.from', 'From')}:</span>
               <Input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} className="w-[140px] h-9 bg-background"/>
             </div>
             <div className="flex items-center gap-2 text-sm">
-              <span className="text-muted-foreground">Sampai:</span>
+              <span className="text-muted-foreground">{t('common.to', 'To')}:</span>
               <Input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} className="w-[140px] h-9 bg-background"/>
             </div>
             <Button variant="ghost" size="sm" onClick={resetFilters} className="text-muted-foreground hover:text-foreground">
-              <RefreshCcw className="h-4 w-4 mr-2" /> Reset
+              <RefreshCcw className="h-4 w-4 mr-2" /> {t('common.reset', 'Reset')}
             </Button>
           </div>
         </div>
 
-        <CardContent className="p-0">
-          <div className="overflow-x-auto rounded-lg border border-border">
+        <div className="overflow-x-auto rounded-lg border border-border">
             <Table className="min-w-full">
               <TableHeader className="bg-muted/30">
                 <TableRow>
-                  <TableHead className="w-[130px] px-6">ID Tiket</TableHead>
-                  <TableHead>Judul</TableHead>
+                  <TableHead className="w-[130px] px-6">{t('common.ticketId', 'Ticket ID')}</TableHead>
+                  <TableHead>{t('common.title', 'Title')}</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Urgensi</TableHead>
                   <TableHead>{t('tickets.reporter')}</TableHead>
-                  <TableHead>Tanggal</TableHead>
-                  <TableHead className="text-right px-6">Aksi</TableHead>
+                  <TableHead>{t('common.date', 'Date')}</TableHead>
+                  <TableHead className="text-right px-6">{t('common.actions', 'Actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -197,7 +196,7 @@ export default function TechnicianTicketsPage() {
                       </TableCell>
                       <TableCell className="text-right px-6">
                         <Button variant="secondary" size="sm" asChild>
-                          <Link to={`/technician/tickets/${ticket.id}`}>Detail</Link>
+                          <Link to={`/technician/tickets/${ticket.id}`}>{t('common.detail', 'Detail')}</Link>
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -208,7 +207,7 @@ export default function TechnicianTicketsPage() {
                       <Empty
                         variant={EMPTY_STATE_VARIANTS.NO_RESULTS}
                         title={t('tickets.no_tickets')}
-                        description="Tidak ada tiket yang cocok dengan filter saat ini."
+                        description={t('userTickets.emptyDesc', 'Try adjusting your search filters.')}
                       />
                     </TableCell>
                   </TableRow>
@@ -216,8 +215,7 @@ export default function TechnicianTicketsPage() {
               </TableBody>
             </Table>
           </div>
-        </CardContent>
-      </Card>
+      </div>
     </div>
   );
 }

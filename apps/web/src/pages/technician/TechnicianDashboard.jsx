@@ -114,7 +114,7 @@ export default function TechnicianDashboard() {
 
     } catch (error) {
       console.error('Dashboard error:', error);
-      toast.error('Gagal memuat data dashboard');
+      toast.error(t('techDashboard.toast.loadError', 'Failed to load dashboard data'));
     } finally {
       setIsLoading(false);
     }
@@ -132,11 +132,11 @@ export default function TechnicianDashboard() {
         tech_is_active: checked
       });
       
-      toast.success('Status berhasil diubah');
+      toast.success(t('techDashboard.toast.statusUpdated', 'Status updated successfully'));
     } catch (error) {
       console.error('Error updating status:', error);
       setTechSettings(prev => ({ ...prev, is_active: !checked }));
-      toast.error('Gagal merubah status');
+      toast.error(t('techDashboard.toast.statusUpdateFailed', 'Failed to update status'));
     } finally {
       setIsUpdatingStatus(false);
     }
@@ -151,7 +151,7 @@ export default function TechnicianDashboard() {
         status: TICKET_STATUS.PROSES
       });
       
-      toast.success('Tiket berhasil diambil');
+      toast.success(t('techDashboard.toast.ticketTaken', 'Ticket claimed successfully'));
       const targetId = selectedTicket.id;
       setSelectedTicket(null);
       
@@ -160,7 +160,7 @@ export default function TechnicianDashboard() {
       }, 500);
       
     } catch (error) {
-      toast.error('Gagal mengambil tiket');
+      toast.error(t('techDashboard.toast.ticketTakeFailed', 'Failed to claim ticket'));
       setSelectedTicket(null);
       fetchDashboardData();
     } finally {
@@ -174,17 +174,17 @@ export default function TechnicianDashboard() {
         <div>
           <SectionHeader
             title={t('dashboard.tech_title', 'Dashboard Teknisi')}
-            subtitle={`${t('dashboard.hello', 'Halo')}, ${currentUser?.name || 'Teknisi'}`}
+            subtitle={`${t('dashboard.hello', 'Hello')}, ${currentUser?.name || t('roles.technician', 'Technician')}`}
           />
         </div>
         
         <div className="flex items-center gap-4 bg-background p-3 rounded-xl border">
           <div className="flex flex-col items-end">
-            <span className="text-sm font-medium text-foreground">Status Bekerja</span>
+            <span className="text-sm font-medium text-foreground">{t('techDashboard.workStatus', 'Work Status')}</span>
             {techSettings?.is_active ? (
-              <Badge className="bg-green-500 hover:bg-green-600">Aktif</Badge>
+              <Badge className="bg-green-500 hover:bg-green-600">{t('techDashboard.active', 'Active')}</Badge>
             ) : (
-              <Badge variant="secondary">Tidak Bertugas</Badge>
+              <Badge variant="secondary">{t('techDashboard.offDuty', 'Off Duty')}</Badge>
             )}
           </div>
           <Switch 
@@ -213,10 +213,10 @@ export default function TechnicianDashboard() {
       ) : (
         <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
           {[
-            { title: `Semua ${t('status.pending', 'Pending')}`, value: stats.pending, icon: ListOrdered, note: 'Antrian tiket menunggu' },
-            { title: `Tiket ${t('status.proses', 'Proses')} Saya`, value: stats.myProses, icon: Activity, note: 'Sedang ditangani saat ini' },
-            { title: `${t('status.selesai', 'Selesai')} Hari Ini`, value: stats.completedToday, icon: CheckCircle2, note: 'Kinerja harian teknisi' },
-            { title: 'Total Bulan Ini', value: stats.totalThisMonth, icon: Calendar, note: 'Akumulasi tiket bulanan' },
+            { title: t('techDashboard.cards.allPending', 'All Pending'), value: stats.pending, icon: ListOrdered, note: t('techDashboard.cards.allPendingNote', 'Waiting queue tickets') },
+            { title: t('techDashboard.cards.myInProgress', 'My In Progress Tickets'), value: stats.myProses, icon: Activity, note: t('techDashboard.cards.myInProgressNote', 'Currently being handled') },
+            { title: t('techDashboard.cards.completedToday', 'Completed Today'), value: stats.completedToday, icon: CheckCircle2, note: t('techDashboard.cards.completedTodayNote', 'Technician daily performance') },
+            { title: t('techDashboard.cards.totalThisMonth', 'Total This Month'), value: stats.totalThisMonth, icon: Calendar, note: t('techDashboard.cards.totalThisMonthNote', 'Monthly ticket accumulation') },
           ].map((item) => (
             <Card key={item.title} className="border-border shadow-sm">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -234,7 +234,7 @@ export default function TechnicianDashboard() {
 
       {/* Insight Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 mt-4">
-        <InsightCard title="Tren Tiket Teknisi" icon={TrendingUp} isLoading={isLoading}>
+        <InsightCard title={t('techDashboard.insights.trendTitle', 'Technician Ticket Trend')} icon={TrendingUp} isLoading={isLoading}>
           {ticketTrendData.length > 0 ? (
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={ticketTrendData}>
@@ -248,30 +248,30 @@ export default function TechnicianDashboard() {
           ) : (
             <Empty
               variant={EMPTY_STATE_VARIANTS.NO_RESULTS}
-              title="Data tren belum tersedia"
-              description="Tidak ada data trend untuk ditampilkan"
+              title={t('techDashboard.insights.noTrendTitle', 'Trend data is not available yet')}
+              description={t('techDashboard.insights.noTrendDesc', 'No trend data to display')}
             />
           )}
         </InsightCard>
 
-        <InsightCard title="SLA Penyelesaian" icon={ShieldCheck} isLoading={isLoading}>
+        <InsightCard title={t('techDashboard.insights.slaTitle', 'SLA Completion')} icon={ShieldCheck} isLoading={isLoading}>
           <div className="flex items-center gap-4">
             <div className="text-3xl font-bold text-primary">{slaCompliance}%</div>
-            <div className="text-sm text-muted-foreground">rasio penyelesaian tiket teknisi hari ini</div>
+            <div className="text-sm text-muted-foreground">{t('techDashboard.insights.slaDesc', 'Technician ticket completion ratio today')}</div>
           </div>
         </InsightCard>
 
-        <InsightCard title="Aging Tiket" icon={Timer} isLoading={isLoading}>
+        <InsightCard title={t('techDashboard.insights.agingTitle', 'Ticket Aging')} icon={Timer} isLoading={isLoading}>
           <div className="space-y-2">
             <div className="text-2xl font-bold text-amber-600">{agingTickets}</div>
-            <p className="text-sm text-muted-foreground">Tiket lebih dari 3 hari belum selesai</p>
+            <p className="text-sm text-muted-foreground">{t('techDashboard.insights.agingDesc', 'Tickets older than 3 days are still unresolved')}</p>
           </div>
         </InsightCard>
 
-        <InsightCard title="Prioritas Hari Ini" icon={Flame} isLoading={isLoading}>
+        <InsightCard title={t('techDashboard.insights.priorityTitle', 'Today Priority')} icon={Flame} isLoading={isLoading}>
           <div className="space-y-2">
             <div className="text-2xl font-bold text-red-600">{urgentTickets}</div>
-            <p className="text-sm text-muted-foreground">Tiket prioritas tinggi di antrian teknisi</p>
+            <p className="text-sm text-muted-foreground">{t('techDashboard.insights.priorityDesc', 'High-priority tickets in technician queue')}</p>
           </div>
         </InsightCard>
       </div>
@@ -281,18 +281,18 @@ export default function TechnicianDashboard() {
           <CardHeader className="flex flex-row items-center justify-between pb-4">
             <CardTitle className="text-xl">{t('tickets.queue', 'Antrian Tiket')}</CardTitle>
             <Button variant="ghost" size="sm" asChild className="text-primary hover:text-primary/80">
-              <Link to="/technician/queue">Lihat Semua <ArrowRight className="ml-1 h-4 w-4" /></Link>
+              <Link to="/technician/queue">{t('common.viewAll', 'View All')} <ArrowRight className="ml-1 h-4 w-4" /></Link>
             </Button>
           </CardHeader>
           <CardContent className="flex-1 p-0">
-            <div className="overflow-x-auto rounded-lg border border-border">
+            <div className="overflow-x-auto">
               <Table className="min-w-full">
                 <TableHeader className="bg-muted/30">
                   <TableRow>
-                    <TableHead className="px-4">Judul & ID</TableHead>
-                    <TableHead>Urgensi</TableHead>
-                    <TableHead>Tanggal</TableHead>
-                    <TableHead className="text-right px-4">Aksi</TableHead>
+                    <TableHead className="px-4">{t('common.titleAndId', 'Title & ID')}</TableHead>
+                    <TableHead>{t('common.urgency', 'Urgency')}</TableHead>
+                    <TableHead>{t('common.date', 'Date')}</TableHead>
+                    <TableHead className="text-right px-4">{t('common.actions', 'Actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -318,7 +318,7 @@ export default function TechnicianDashboard() {
                         </TableCell>
                         <TableCell className="text-right px-4">
                           <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white" onClick={() => setSelectedTicket(ticket)}>
-                            <Hand className="mr-1.5 h-3.5 w-3.5" /> Ambil
+                            <Hand className="mr-1.5 h-3.5 w-3.5" /> {t('techDashboard.take', 'Take')}
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -329,7 +329,7 @@ export default function TechnicianDashboard() {
                         <Empty
                           variant={EMPTY_STATE_VARIANTS.NO_RESULTS}
                           title={t('tickets.no_tickets', 'Tidak ada tiket')}
-                          description="Belum ada tiket pada antrian saat ini."
+                          description={t('techDashboard.queueEmptyDesc', 'There are no tickets in queue at the moment.')}
                         />
                       </TableCell>
                     </TableRow>
@@ -342,19 +342,19 @@ export default function TechnicianDashboard() {
 
         <Card className="border-border shadow-sm flex flex-col">
           <CardHeader className="flex flex-row items-center justify-between pb-4">
-            <CardTitle className="text-xl">Tiket Proses Milik Saya</CardTitle>
+            <CardTitle className="text-xl">{t('techDashboard.myInProgressTitle', 'My In Progress Tickets')}</CardTitle>
             <Button variant="ghost" size="sm" asChild className="text-primary hover:text-primary/80">
-              <Link to="/technician/tickets">Lihat Semua <ArrowRight className="ml-1 h-4 w-4" /></Link>
+              <Link to="/technician/tickets">{t('common.viewAll', 'View All')} <ArrowRight className="ml-1 h-4 w-4" /></Link>
             </Button>
           </CardHeader>
           <CardContent className="flex-1 p-0">
-            <div className="overflow-x-auto rounded-lg border border-border">
+            <div className="overflow-x-auto">
               <Table className="min-w-full">
                 <TableHeader className="bg-muted/30">
                   <TableRow>
-                    <TableHead className="px-4">Judul & ID</TableHead>
+                    <TableHead className="px-4">{t('common.titleAndId', 'Title & ID')}</TableHead>
                     <TableHead>{t('tickets.reporter', 'Pelapor')}</TableHead>
-                    <TableHead className="text-right px-4">Aksi</TableHead>
+                    <TableHead className="text-right px-4">{t('common.actions', 'Actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -378,7 +378,7 @@ export default function TechnicianDashboard() {
                         </TableCell>
                         <TableCell className="text-right px-4">
                           <Button variant="outline" size="sm" asChild>
-                            <Link to={`/technician/tickets/${ticket.id}`}>Detail</Link>
+                            <Link to={`/technician/tickets/${ticket.id}`}>{t('common.detail', 'Detail')}</Link>
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -389,7 +389,7 @@ export default function TechnicianDashboard() {
                         <Empty
                           variant={EMPTY_STATE_VARIANTS.NO_RESULTS}
                           title={t('tickets.no_tickets', 'Tidak ada tiket')}
-                          description="Belum ada tiket proses milik teknisi saat ini."
+                          description={t('techDashboard.myInProgressEmptyDesc', 'There are no in-progress tickets assigned to you at the moment.')}
                         />
                       </TableCell>
                     </TableRow>
@@ -404,9 +404,9 @@ export default function TechnicianDashboard() {
       <Dialog open={!!selectedTicket} onOpenChange={(open) => !open && setSelectedTicket(null)}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Konfirmasi Ambil Tiket</DialogTitle>
+            <DialogTitle>{t('techDashboard.takeDialog.title', 'Confirm Take Ticket')}</DialogTitle>
             <DialogDescription>
-              Apakah Anda yakin ingin mengambil dan memproses tiket ini?
+              {t('techDashboard.takeDialog.desc', 'Are you sure you want to take and process this ticket?')}
             </DialogDescription>
           </DialogHeader>
           {selectedTicket && (
@@ -423,7 +423,7 @@ export default function TechnicianDashboard() {
               {t('buttons.cancel', 'Batal')}
             </Button>
             <Button onClick={handleTakeTicket} disabled={isTaking} className="bg-blue-600 hover:bg-blue-700 text-white">
-              {isTaking ? 'Memproses...' : 'Ya, Ambil Tiket'}
+              {isTaking ? t('common.processing', 'Processing...') : t('techDashboard.takeDialog.confirm', 'Yes, Take Ticket')}
             </Button>
           </DialogFooter>
         </DialogContent>
