@@ -22,3 +22,14 @@ backend/logs/.*-audit.json
 backend/uploads/*
 !backend/uploads/.gitkeep
 
+# Internal documentation & notes
+documentations/
+VERSIONING.md
+RELEASE_CHECKLIST.md
+CHANGELOG.md
+apps/web/docs/
+backend/artifacts/
+
+# Build archives
+app.tar.gz
+
