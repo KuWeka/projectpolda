@@ -60,7 +60,6 @@ projectpolda/                   # Monorepo root
 │   │   └── utils/              # Logger, cache, metrics, Swagger, audit
 │   └── scripts/                # Ops scripts: deploy, rollback, backup, SBOM, load test
 │
-├── documentations/             # Dokumentasi teknis & fase implementasi
 └── .github/workflows/          # CI/CD pipelines
 ```
 
